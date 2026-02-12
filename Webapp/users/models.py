@@ -29,26 +29,26 @@ class UserProfile(models.Model):
 
     dob = models.DateField(
         null=True,
-        blank=True
+        blank=False
     )
 
     gender = models.CharField(
         max_length=10,
         choices=GENDER_CHOICES,
         null=True,
-        blank=True
+        blank=False
     )
 
     badge_number = models.CharField(
         max_length=50,
         null=True,
-        blank=True
+        blank=False
     )
 
     department = models.CharField(
         max_length=100,
         null=True,
-        blank=True
+        blank=False
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
