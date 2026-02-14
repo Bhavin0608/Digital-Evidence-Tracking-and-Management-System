@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+    <style>
+        /* ===== CENTER WHOLE DASHBOARD ===== */
+
+        #content {
+            /* display: flex; */
+            justify-content: center;   /* horizontal center */
+        }
+
+        /* Main dashboard wrapper */
+        .colMS {
+            float: none !important;
+            margin: 50px 250px !important;   /* center block */
+            width: 100%;
+            max-width: 1100px;              /* control width */
+        }
+
+        /* Keep Recent Actions beside models */
+        .colM {
+            width: 50% !important;
+        }
+
+        .colS {
+            width: 50% !important;
+        }
+
+        /* Optional spacing */
+        .module {
+            border-radius: 12px;
+        }
+
+        /* Remove extra left gap if sidebar hidden */
+        #container {
+            padding-left: 0 !important;
+        }
+
+    </style>
+{% endblock %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('DETAMS Admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">DETAMS Administration</a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+{% block content_title %}{% endblock %}
+
+
+{% block nav-global %}{% endblock %}
