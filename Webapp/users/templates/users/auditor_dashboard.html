@@ -1,0 +1,152 @@
+{% csrf_token %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditor Dashboard | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #059669;    /* Emerald 600 */
+            --secondary: #10b981;  /* Emerald 500 */
+            --bg-light: #f8fafc;   
+            --text-dark: #0f172a;  
+            --text-muted: #64748b; 
+            --border: #e2e8f0;     
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2.2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active, .nav-links a:hover { background: rgba(16, 185, 129, 0.1); color: var(--secondary); }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; }
+        
+        header {
+            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .badge-role { background: #d1fae5; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+
+        /* --- CONTENT --- */
+        .content { padding: 40px; }
+        .welcome-header { margin-bottom: 40px; }
+        .welcome-header h1 { font-size: 2rem; color: var(--text-dark); font-weight: 800; }
+        .welcome-header p { color: var(--text-muted); font-weight: 500; margin-top: 5px; }
+
+        /* --- DASHBOARD GRID --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .card {
+            background: var(--white); padding: 35px; border-radius: 24px;
+            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            transition: 0.3s; display: flex; flex-direction: column;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        
+        .card-icon {
+            width: 60px; height: 60px; background: #d1fae5; color: var(--primary);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; margin-bottom: 20px;
+        }
+
+        .card h3 { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+        .card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; flex: 1; }
+
+        .btn-action {
+            width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--primary);
+            background: transparent; color: var(--primary); font-weight: 700; cursor: pointer;
+            text-align: center; text-decoration: none; transition: 0.3s;
+        }
+        .btn-action:hover { background: var(--primary); color: white; }
+
+        footer { padding: 30px; text-align: center; border-top: 1px solid var(--border); background: var(--white); margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="#"><i class='bx bx-history'></i> Chain of Custody</a></li>
+            <li><a href="#"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
+            <li><a href="#"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+            <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <header>
+            <span style="font-weight: 700; color: var(--text-muted);">Compliance & Verification Portal</span>
+            <div class="user-profile">
+                <span class="badge-role">LEGAL AUDITOR</span>
+                <img src="https://ui-avatars.com/api/?name=Auditor+Vance&background=059669&color=fff" alt="User">
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="welcome-header">
+                <h1>Verification Workbox</h1>
+                <p>Ensuring end-to-end evidence integrity and procedural compliance.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-icon"><i class='bx bx-history'></i></div>
+                    <h3>Chain of Custody</h3>
+                    <p>Review the complete, unbroken record of evidence movement, from initial collection to the current state.</p>
+                    <a href="#" class="btn-action">Trace History</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class='bx bx-shield-quarter'></i></div>
+                    <h3>Integrity Checker</h3>
+                    <p>Utilize the hash comparison tool to detect any irregularities, unauthorized modifications, or policy violations.</p>
+                    <a href="#" class="btn-action">Verify Hashes</a>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon"><i class='bx bxs-file-pdf'></i></div>
+                    <h3>Compliance Reports</h3>
+                    <p>Export court-ready integrity verification and compliance reports for legal proceedings and internal audits.</p>
+                    <a href="#" class="btn-action">Generate Report</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+                &copy; 2026 EvidenceLock | Compliance & Integrity Level 3
+            </p>
+        </footer>
+    </div>
+
+</body>
+</html>

@@ -1,17 +1,386 @@
-<h2>Global Login</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | DETAMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- <link rel="stylesheet" href="style.css"> -->
+    <style>
+        :root {
+            /* Cool & Professional Palette */
+            --primary: #0284c7;    /* Sky 600 */
+            --secondary: #0ea5e9;  /* Sky 500 */
+            --bg-light: #f8fafc;   /* Slate 50 */
+            --text-dark: #0f172a;  /* Slate 900 */
+            --text-muted: #64748b; /* Slate 500 */
+            --border: #e2e8f0;     /* Slate 200 */
+        }
 
-<form method="POST">
-    {% csrf_token %}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* Font selection and smoothing */
+            font-family: 'Manrope', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
 
-    <label>Email / Username</label>
-    <input type="text" name="username">
+        body.light-theme {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    <label>Password</label>
-    <input type="password" name="password">
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            background: #fff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+        }
 
-    <button type="submit">Login</button>
-</form>
+        /* LEFT BRAND SIDE */
+        .info-side {
+            flex: 1;
+            background: var(--text-dark); /* Dark Slate for contrast */
+            padding: 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-{% if error %}
-<p style="color:red;">{{ error }}</p>
-{% endif %}
+        .icon-logo {
+            font-size: 3.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .brand h1 {
+            font-size: 2.2rem;
+            font-weight: 800; /* Extra Bold */
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+        }
+
+        .brand span {
+            color: var(--secondary);
+        }
+
+        .brand-sub {
+            font-size: 1.05rem;
+            font-weight: 300;
+            line-height: 1.6;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--secondary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* RIGHT FORM SIDE */
+        .form-side {
+            flex: 1.4;
+            padding: 60px;
+            background: #ffffff;
+        }
+
+        .title-area h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .title-area p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+        /* Typography for labels */
+        .input-group label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800; /* Bold and small labels are very modern */
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Input Fields styling */
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+        }
+
+        /* Button Typography */
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #0369a1;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-wrapper { flex-direction: column; }
+            .info-side { padding: 40px; }
+            .form-side { padding: 40px; }
+            .input-row { flex-direction: column; gap: 20px; }
+        }
+
+        /* Add these to your existing style.css */
+
+        /* Profile Preview on the Left Side */
+        .profile-preview {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--secondary);
+            padding: 5px;
+        }
+
+        .upload-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--secondary);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid var(--text-dark);
+            color: white;
+            transition: 0.3s;
+        }
+
+        .upload-badge:hover {
+            transform: scale(1.1);
+            background: #fff;
+            color: var(--secondary);
+        }
+
+        .profile-preview h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(14, 165, 233, 0.15);
+            color: var(--secondary);
+            padding: 6px 14px;
+            border-radius: 50px;
+        }
+
+        /* Security Stats */
+        .security-stats {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        /* Button Grouping */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            flex: 0.5;
+            padding: 18px;
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+
+    </style>
+</head>
+<body class="light-theme">
+    <div class="main-wrapper">
+        <div class="info-side">
+            <div class="brand">
+                <i class='bx bxs-shield-alt-2 icon-logo'></i>
+                <h1>DET<span>AMS</span></h1>
+            </div>
+            <p class="brand-sub">The global standard in digital chain of custody, ensuring data integrity through cryptographic verification.</p>
+            <div class="feature-tag">
+                <i class='bx bx-lock-open-alt'></i> Secure Session Access
+            </div>
+        </div>
+
+        <div class="form-side">
+            <div class="form-card">
+                <div class="title-area">
+                    <h2>Staff Login</h2>
+                    <p>Access the forensic vault with your official credentials.</p>
+                </div>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-group full-width">
+                        <label>OFFICIAL USERNAME</label>
+                        <input type="text" name="username" placeholder="26SO-XXX" required>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>SECURITY PASSWORD</label>
+                        <input type="password" name="password" placeholder="••••••••" required>
+                    </div>
+
+                    <!-- <div class="input-group full-width" style="margin-top: 10px;">
+                        <label>VERIFY ROLE</label>
+                        <select required>
+                            <option value="" disabled selected>Select your authority level</option>
+                            <option>Admin</option>
+                            <option>Senior Authority</option>
+                            <option>Investigator</option>
+                            <option>Auditor</option>
+                        </select>
+                    </div> -->
+
+                    <button type="submit" class="btn-primary" style="margin-top: 25px;">
+                        Login to System <i class='bx bx-log-in-circle'></i>
+                    </button>
+                </form>
+                {% if error %}
+                    <p style="color:red; margin-top:15px;">
+                        {{ error }}
+                    </p>
+                {% endif %}
+
+                <div class="form-footer">
+                    <p class="login-link">New to the system? <font style="color: #0ea5e9; font-weight: bolder;">Take permission to Admin</font></p>
+                    <!-- <p class="login-link" style="margin-top: 10px;"><a href="#" style="color: #64748b; font-size: 0.8rem;">Forgot Security Credentials?</a></p> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
