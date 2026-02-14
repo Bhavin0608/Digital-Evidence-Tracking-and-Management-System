@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "users"
+    "users",
+    "cases"
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#------------------------------------ IMP ----------------------------------------
+#Session time setting
+SESSION_COOKIE_AGE = 3600 # max session life time is 1hrs
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True # when browser is close then session is expires
+SESSION_SAVE_EVERY_REQUEST = True # reset timer on activity again . So active users don’t get logged out mid-work.
+
+#------------------------------------ LOGIN URL -----------------------------------
+LOGIN_URL = "/login/"# this is added because django want url like : /accounts/login/ but we have /login/
