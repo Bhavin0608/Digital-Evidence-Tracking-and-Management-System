@@ -1,0 +1,272 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}Login | DETAMS{% endblock %}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | EvidenceLock</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #0284c7;
+            --secondary: #0ea5e9;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+/* ---------------------  New Added(override make flase) ------------------------ */
+        #header,
+        #nav-sidebar,
+        .breadcrumbs,
+        #content-related {
+            display: none !important;
+        }
+
+        .toggle-nav-sidebar {
+            display: none !important;
+        }
+
+        #container {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #content {
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0 !important;
+        }
+
+        .colM {
+            width: 100% !important;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+/* ---------------------  New Added ------------------------ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Manrope', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body.light-theme {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1100px;
+            background: #fff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+        }
+
+        .info-side {
+            flex: 1;
+            background: var(--text-dark);
+            padding: 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .icon-logo {
+            font-size: 3.5rem;
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+
+        .brand h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 10px;
+        }
+
+        .brand span { color: var(--secondary); }
+
+        .brand-sub {
+            font-size: 1.05rem;
+            font-weight: 300;
+            line-height: 1.6;
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .feature-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--secondary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-side {
+            flex: 1.4;
+            padding: 60px;
+            background: #ffffff;
+        }
+
+        .title-area h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .title-area p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-dark);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 25px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body class="light-theme">
+
+<div class="main-wrapper">
+
+    <!-- LEFT -->
+    <div class="info-side">
+        <div class="brand">
+            <i class='bx bxs-shield-alt-2 icon-logo'></i>
+            <h1>DET<span>AMS</span></h1>
+        </div>
+        <p class="brand-sub">
+            The global standard in digital chain of custody,
+            ensuring data integrity through cryptographic verification.
+        </p>
+        <div class="feature-tag">
+            <i class='bx bx-lock-open-alt'></i> Secure Session Access
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="form-side">
+
+        <div class="title-area">
+            <h2>Admin Login</h2>
+            <p>Access the forensic vault with your official credentials.</p>
+        </div>
+
+        <!-- DJANGO ADMIN LOGIN FORM -->
+        <form method="post" action="{% url 'admin:login' %}">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <p style="color:red; margin-bottom:15px;">
+                    *Invalid username or password.
+                </p>
+            {% endif %}
+
+            <div class="input-group">
+                <label>USERNAME</label>
+                <input type="text" name="username" required>
+            </div>
+
+            <div class="input-group" style="margin-top:20px;">
+                <label>SECURITY PASSWORD</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <button type="submit" class="btn-primary">
+                Establish Secure Session
+                <i class='bx bx-log-in-circle'></i>
+            </button>
+
+        </form>
+
+        <p class="login-link">
+            New to the system? <font style="color: #0ea5e9;">Create New Superuser</font>
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
+{% endblock %}
