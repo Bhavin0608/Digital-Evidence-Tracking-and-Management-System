@@ -114,18 +114,63 @@ def dashboard_redirect(request): # for /dashboard/ url to redirect to respective
 #------------------------------ Individual dashboards -------------------------------
 @never_cache
 @login_required
+@login_required
+@never_cache
+@login_required
 def so_dashboard(request):
+
+    user = request.user
+
+    # Superuser should use admin panel
+    if user.is_superuser:
+        return redirect("/admin/")
+
+    # Ensure profile exists
+    if not hasattr(user, "profile"):
+        return HttpResponseForbidden("Unauthorized access.")
+
+    # Role validation
+    if user.profile.role != "SENIOR_OFFICER":
+        return HttpResponseForbidden("Access denied.")
+
     return render(request, "users/so_dashboard.html")
+
 
 @never_cache
 @login_required
 def investigator_dashboard(request):
+
+    user = request.user
+
+    if user.is_superuser:
+        return redirect("/admin/")
+
+    if not hasattr(user, "profile"):
+        return HttpResponseForbidden("Unauthorized access.")
+
+    if user.profile.role != "INVESTIGATOR":
+        return HttpResponseForbidden("Access denied.")
+
     return render(request, "users/investigator_dashboard.html")
+
 
 @never_cache
 @login_required
 def auditor_dashboard(request):
+
+    user = request.user
+
+    if user.is_superuser:
+        return redirect("/admin/")
+
+    if not hasattr(user, "profile"):
+        return HttpResponseForbidden("Unauthorized access.")
+
+    if user.profile.role != "AUDITOR":
+        return HttpResponseForbidden("Access denied.")
+
     return render(request, "users/auditor_dashboard.html")
+
 
 @never_cache
 @login_required

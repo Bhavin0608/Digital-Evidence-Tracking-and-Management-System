@@ -1,5 +1,4 @@
 # this is used to check the connection to the database before running the server.......
-
 import os
 import django
 
