@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("users.urls")),
     path("", root_redirect, name="root"),
+    path("evidence/", include("evidence.urls")),
 ]
 
