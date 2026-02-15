@@ -11,7 +11,8 @@ from core.rbac_service import RBACService
 @login_required
 def upload_evidence(request, case_id):
 
-    case = get_object_or_404(Case, id=case_id)
+    case = get_object_or_404(Case, case_id=case_id)
+
 
     # ===== RBAC CHECK (Temporary Basic Check) =====
     if not RBACService.can_upload_evidence(request.user, case):
@@ -21,7 +22,8 @@ def upload_evidence(request, case_id):
         form = EvidenceUploadForm(request.POST, request.FILES)
 
         if form.is_valid():
-            file = request.FILES["file"]
+            file = form.cleaned_data["file"]
+
 
             sha256_hash = HashService.generate_sha256(file)
 
@@ -29,7 +31,7 @@ def upload_evidence(request, case_id):
                 case=case,
                 file=file,
                 file_name=file.name,
-                file_type=file.name.split('.')[-1],
+                file_type = file.content_type,
                 file_size=file.size,
                 sha256_hash=sha256_hash,
                 uploaded_by=request.user
