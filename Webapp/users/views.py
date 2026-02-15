@@ -6,10 +6,12 @@ from django.contrib.auth import logout
 
 from users.models import UserProfile
 
+#------------------------------ Logout View ---------------------------------------
 def logout_view(request):
     logout(request)          # destroys session
     return redirect("login")  # redirect to login page
 
+#------------------------------ Root and Login Views -------------------------------
 @never_cache
 def root_redirect(request): # This is used to use root http://127.0.0.1:8000/ not explicit write home/ or login/ etc.
 
@@ -37,6 +39,7 @@ def root_redirect(request): # This is used to use root http://127.0.0.1:8000/ no
 
     else:
         return redirect("login")
+    
 @never_cache
 def login_view(request):
 
@@ -85,6 +88,30 @@ def login_view(request):
 
     return render(request, "users/login.html")
 
+#------------------------------ Common dashboard redirection -------------------------------
+@never_cache
+@login_required
+def dashboard_redirect(request): # for /dashboard/ url to redirect to respective dashboard based on role
+
+    user = request.user
+
+    if not hasattr(user, "profile"):
+        return redirect("/admin/")
+
+    role = user.profile.role
+
+    if role == "SENIOR_OFFICER":
+        return redirect("so_dashboard")
+
+    elif role == "INVESTIGATOR":
+        return redirect("investigator_dashboard")
+
+    elif role == "AUDITOR":
+        return redirect("auditor_dashboard")
+
+    return redirect("login")
+
+#------------------------------ Individual dashboards -------------------------------
 @never_cache
 @login_required
 def so_dashboard(request):
@@ -99,3 +126,8 @@ def investigator_dashboard(request):
 @login_required
 def auditor_dashboard(request):
     return render(request, "users/auditor_dashboard.html")
+
+@never_cache
+@login_required
+def profile_view(request):
+    return render(request, "users/profile.html")

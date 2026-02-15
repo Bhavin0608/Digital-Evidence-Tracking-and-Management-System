@@ -92,7 +92,7 @@
 <body>
 
     <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
         <ul class="nav-links">
             <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="#"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
@@ -106,15 +106,15 @@
         <header>
             <span style="font-weight: 700; color: var(--text-muted);">Senior Officer Portal</span>
             <div class="user-profile">
-                <span class="badge-role">SUPERVISOR</span>
-                <img src="https://ui-avatars.com/api/?name=Senior+Officer&background=0284c7&color=fff" alt="User">
+                <span class="badge-role">{{ request.user.profile.role }}</span>
+                <a href="{% url 'profile' %}"><img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0284c7&color=fff" alt="User"></a>
             </div>
         </header>
 
         <main class="content">
             <div class="welcome-header">
                 <h1>Supervisory Overview</h1>
-                <p>Manage investigator deployment and monitor active case lifecycle progress.</p>
+                <p>Logged in as: <b>{{ request.user.first_name }} {{ request.user.last_name }}</b></p>
             </div>
 
             <div class="dashboard-grid">
@@ -143,7 +143,7 @@
 
         <footer>
             <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
-                &copy; 2026 EvidenceLock | Authority Supervision Level 2
+                &copy; 2026 DETAMS | Authority Supervision Level 2
             </p>
         </footer>
     </div>

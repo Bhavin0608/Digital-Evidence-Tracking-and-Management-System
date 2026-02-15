@@ -12,13 +12,14 @@
 
     <style>
         :root {
-            --primary: #059669;    /* Emerald 600 */
-            --secondary: #10b981;  /* Emerald 500 */
+            --primary: #0284c7;    
+            --secondary: #0ea5e9;  
             --bg-light: #f8fafc;   
             --text-dark: #0f172a;  
             --text-muted: #64748b; 
             --border: #e2e8f0;     
             --white: #ffffff;
+            --io-accent: #6366f1;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
@@ -37,7 +38,7 @@
             display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
             padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
         }
-        .nav-links a.active, .nav-links a:hover { background: rgba(16, 185, 129, 0.1); color: var(--secondary); }
+        .nav-links a.active, .nav-links a:hover { background: rgba(99, 102, 241, 0.1); color: var(--secondary); }
 
         /* --- MAIN WRAPPER --- */
         .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; }
@@ -47,8 +48,8 @@
             display: flex; justify-content: space-between; align-items: center;
         }
         .user-profile { display: flex; align-items: center; gap: 12px; }
-        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
-        .badge-role { background: #d1fae5; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--io-accent); }
+        .badge-role { background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
 
         /* --- CONTENT --- */
         .content { padding: 40px; }
@@ -71,7 +72,7 @@
         .card:hover { transform: translateY(-5px); border-color: var(--primary); }
         
         .card-icon {
-            width: 60px; height: 60px; background: #d1fae5; color: var(--primary);
+            width: 60px; height: 60px; background: #eef2ff; color: var(--primary);
             border-radius: 16px; display: flex; align-items: center; justify-content: center;
             font-size: 2rem; margin-bottom: 20px;
         }
@@ -92,7 +93,7 @@
 <body>
 
     <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
         <ul class="nav-links">
             <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="#"><i class='bx bx-history'></i> Chain of Custody</a></li>
@@ -106,15 +107,15 @@
         <header>
             <span style="font-weight: 700; color: var(--text-muted);">Compliance & Verification Portal</span>
             <div class="user-profile">
-                <span class="badge-role">LEGAL AUDITOR</span>
-                <img src="https://ui-avatars.com/api/?name=Auditor+Vance&background=059669&color=fff" alt="User">
+                <span class="badge-role">{{ request.user.profile.role }}</span>
+                <a href="{% url 'profile' %}"><img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=6366f1&color=fff" alt="User"></a>
             </div>
         </header>
 
         <main class="content">
             <div class="welcome-header">
                 <h1>Verification Workbox</h1>
-                <p>Ensuring end-to-end evidence integrity and procedural compliance.</p>
+                <p>Logged in as: <b>{{ request.user.first_name }} {{ request.user.last_name }}</b></p>
             </div>
 
             <div class="dashboard-grid">
@@ -143,7 +144,7 @@
 
         <footer>
             <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
-                &copy; 2026 EvidenceLock | Compliance & Integrity Level 3
+                &copy; 2026 DETAMS | Compliance & Integrity Level 3
             </p>
         </footer>
     </div>

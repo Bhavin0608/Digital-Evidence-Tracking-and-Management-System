@@ -1,0 +1,214 @@
+{% csrf_token %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identity Vault | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #0284c7;    
+            --secondary: #0ea5e9;  
+            --bg-light: #f8fafc;   
+            --text-dark: #0f172a;  
+            --text-muted: #64748b; 
+            --border: #e2e8f0;     
+            --white: #ffffff;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-light);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2.2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+
+        /* --- MAIN AREA --- */
+        .main-wrapper { margin-left: 280px; flex: 1; padding: 60px; }
+
+        .header-area { margin-bottom: 40px; }
+        .header-area h1 { font-size: 2.2rem; font-weight: 800; color: var(--text-dark); letter-spacing: -1px; }
+        .header-area p { color: var(--text-muted); font-size: 1rem; font-weight: 600; }
+
+        /* --- IDENTITY GRID --- */
+        .identity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* --- USER BANNER --- */
+        .avatar-section {
+            grid-column: span 2;
+            display: flex; align-items: center; gap: 35px;
+            background: var(--white);
+            padding: 40px; border-radius: 30px; margin-bottom: 10px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .profile-img-wrapper {
+            width: 130px; height: 130px; border-radius: 35px;
+            padding: 5px; border: 4px solid var(--secondary); position: relative;
+            background: var(--white);
+        }
+        .profile-img-wrapper img { width: 100%; height: 100%; border-radius: 30px; object-fit: cover; }
+
+        .status-chip {
+            background: #dcfce7; color: #166534; padding: 6px 16px;
+            border-radius: 50px; font-size: 0.7rem; font-weight: 800; display: inline-block; margin-top: 10px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- UNIQUE ID CARDS --- */
+        .id-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 24px;
+            transition: 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .id-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-label {
+            font-size: 0.7rem; font-weight: 800; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; display: block;
+        }
+
+        .card-value { font-size: 1.15rem; font-weight: 700; color: var(--text-dark); }
+        
+        .card-icon { 
+            font-size: 1.6rem; color: var(--secondary); 
+            position: absolute; right: 25px; top: 25px; 
+            opacity: 0.2; transition: 0.3s;
+        }
+        .id-card:hover .card-icon { opacity: 1; transform: scale(1.1); }
+
+        /* Locked / Specific Style */
+        .locked { background: #f1f5f9; border-style: dashed; }
+        .locked .card-value { color: var(--text-muted); }
+        .locked .card-icon { color: var(--danger); opacity: 0.5; }
+
+        /* --- ACTION BAR --- */
+        .action-bar { margin-top: 40px; display: flex; align-items: center; gap: 20px; }
+        .btn-primary {
+            background: var(--primary); color: white; padding: 16px 35px;
+            border-radius: 14px; font-weight: 800; text-decoration: none;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .btn-primary:hover { background: #0369a1; transform: translateY(-2px); }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'dashboard_redirect' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="#" class="active"><i class='bx bxs-user-circle'></i> Profile</a></li>
+            <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="header-area">
+            <h1>{{ request.user.profile.department }} <span style="color: var(--primary);">Identity</span> Portal</h1>
+            <p>Verified Administrative & Field Credentials</p>
+        </div>
+
+        <div class="identity-grid">
+            
+            <div class="avatar-section">
+                <div class="profile-img-wrapper">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0284c7&color=fff" alt="Profile">
+                </div>
+                <div>
+                    <span class="card-label" style="color: var(--primary);">Active Authority</span>
+                    <h2 style="font-size: 1.8rem; color: var(--text-dark);">{{ request.user.first_name }} {{ request.user.last_name }}</h2>
+                    <div class="status-chip"><i class='bx bxs-check-shield'></i> Identity Verified</div>
+                </div>
+            </div>
+
+            <div class="id-card locked">
+                <i class='bx bxs-user-pin card-icon'></i>
+                <span class="card-label">System Username</span>
+                <div class="card-value">{{ request.user.username }}</div>
+            </div>
+
+            <div class="id-card locked">
+                <i class='bx bxs-lock-alt card-icon'></i>
+                <span class="card-label">Primary Email (Locked)</span>
+                <div class="card-value">{{ request.user.email }}</div>
+            </div>
+
+            <div class="id-card">
+                <i class='bx bxs-id-card card-icon'></i>
+                <span class="card-label">First Name</span>
+                <div class="card-value">{{ request.user.first_name }}</div>
+            </div>
+
+            <div class="id-card">
+                <i class='bx bxs-id-card card-icon'></i>
+                <span class="card-label">Last Name</span>
+                <div class="card-value">{{ request.user.last_name }}</div>
+            </div>
+
+            <div class="id-card locked">
+                <i class='bx bxs-勲章 card-icon'></i> <i class='bx bxs-medal card-icon'></i>
+                <span class="card-label">Badge Number</span>
+                <div class="card-value">{{ request.user.profile.badge_number }}</div>
+            </div>
+
+            <div class="id-card">
+                <i class='bx bxs-briefcase card-icon'></i>
+                <span class="card-label">Assigned Department</span>
+                <div class="card-value">{{ request.user.profile.department }} Unit</div>
+            </div>
+
+            <div class="id-card">
+                <i class='bx bxs-user-badge card-icon'></i>
+                <span class="card-label">Access Role</span>
+                <div class="card-value">{{ request.user.profile.role }}</div>
+            </div>
+
+        </div>
+
+        <div class="action-bar">
+            <!-- <a href="#" class="btn-primary"><i class='bx bxs-edit-alt'></i> Request Record Update</a> -->
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+                <i class='bx bxs-info-circle'></i> Email & Role modifications require Administrator approval.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
