@@ -5,6 +5,7 @@ from cases.models import Case
 from .models import Evidence
 from .forms import EvidenceUploadForm
 from core.hash_service import HashService
+from core.rbac_service import RBACService
 
 
 @login_required
@@ -13,9 +14,8 @@ def upload_evidence(request, case_id):
     case = get_object_or_404(Case, id=case_id)
 
     # ===== RBAC CHECK (Temporary Basic Check) =====
-    if not request.user.is_superuser and case.assigned_senior_officer != request.user:
-        if not case.members.filter(user=request.user).exists():
-            return HttpResponseForbidden("You are not assigned to this case.")
+    if not RBACService.can_upload_evidence(request.user, case):
+        return HttpResponseForbidden("You do not have permission to upload evidence.")
 
     if request.method == "POST":
         form = EvidenceUploadForm(request.POST, request.FILES)
