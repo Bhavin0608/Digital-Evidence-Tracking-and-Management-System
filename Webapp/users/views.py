@@ -112,11 +112,9 @@ def dashboard_redirect(request): # for /dashboard/ url to redirect to respective
     return redirect("login")
 
 #------------------------------ Individual dashboards -------------------------------
+
+@login_required
 @never_cache
-@login_required
-@login_required
-@never_cache
-@login_required
 def so_dashboard(request):
 
     user = request.user
