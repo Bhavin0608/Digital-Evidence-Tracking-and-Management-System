@@ -8,14 +8,16 @@ class RBACService:
         """
         General case access check.
         """
+
+        # Admin full access
         if user.is_superuser:
             return True
 
-        # Senior Officer access
-        if case.assigned_senior_officer == user:
+        # Senior Officer assigned to case
+        if case.assigned_so == user:
             return True
 
-        # Investigator access
+        # Investigator assigned via CaseMember
         if CaseMember.objects.filter(case=case, user=user).exists():
             return True
 
@@ -24,18 +26,21 @@ class RBACService:
     @staticmethod
     def can_upload_evidence(user, case):
         """
-        Only investigators assigned to case or superuser.
+        Only assigned investigators (or superuser) can upload evidence.
         """
+
         if user.is_superuser:
             return True
 
+        # Must be assigned investigator
         return CaseMember.objects.filter(case=case, user=user).exists()
 
     @staticmethod
     def can_modify_evidence(user, evidence):
         """
-        Only uploader or superuser can modify evidence.
+        Only uploader (or superuser) can modify evidence.
         """
+
         if user.is_superuser:
             return True
 
