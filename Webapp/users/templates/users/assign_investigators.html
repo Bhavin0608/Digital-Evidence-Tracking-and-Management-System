@@ -1,0 +1,203 @@
+{% csrf_token %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Personnel | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #0284c7;    
+            --secondary: #0ea5e9;  
+            --bg-light: #f8fafc;   
+            --text-dark: #0f172a;  
+            --text-muted: #64748b; 
+            --border: #e2e8f0;     
+            --white: #ffffff;
+            --accent: #6366f1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+
+        /* --- MAIN CONTENT --- */
+        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .content-area { flex: 1; padding: 40px; max-width: 1000px; margin: 0 auto; width: 100%; }
+        
+        .page-header { margin-bottom: 35px; }
+        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.5px; }
+        .page-header p { color: var(--text-muted); font-weight: 500; }
+
+        /* --- ASSIGNMENT FORM --- */
+        .assignment-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group { margin-bottom: 30px; }
+        label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; }
+        
+        select, input {
+            width: 100%; padding: 14px 18px; background: #f1f5f9; border: 1px solid var(--border);
+            border-radius: 12px; font-size: 0.95rem; font-weight: 600; outline: none; transition: 0.2s;
+        }
+        select:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1); }
+
+        /* --- OFFICER SELECTION GRID --- */
+        .officer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .officer-checkbox { /*position: absolute;*/ opacity: 0; }
+        .officer-label {
+            display: flex; align-items: center; gap: 12px; padding: 15px;
+            background: #f8fafc; border: 1px solid var(--border); border-radius: 12px;
+            cursor: pointer; transition: 0.3s;
+        }
+        .officer-label img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--white); }
+        .officer-label span { font-size: 0.85rem; font-weight: 700; color: var(--text-dark); }
+
+        .officer-checkbox:checked + .officer-label {
+            background: #f0f9ff; border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.1);
+        }
+
+        header {
+            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .badge-role { background: #e0f2fe; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+
+
+        /* --- BUTTONS --- */
+        .btn-assign {
+            width: 100%; padding: 18px; background: var(--primary); color: white; border: none;
+            border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s; margin-top: 20px;
+        }
+        .btn-assign:hover { background: #0369a1; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2); }
+
+        /* --- FOOTER --- */
+        .site-footer { padding: 25px; background: var(--white); text-align: center; border-top: 1px solid var(--border); }
+        .copyright { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="#" class="active"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
+            <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Case Progress</a></li>
+            <li><a href="#"><i class='bx bxs-lock-open'></i> Close Request</a></li>
+            <!-- <li style="margin-top: auto;"><a href="../index.html"><i class='bx bxs-log-out-circle'></i> Logout</a></li> -->
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <header>
+            <span style="font-weight: 700; color: var(--text-muted);">Senior Officer Portal</span>
+            <div class="user-profile">
+                <span class="badge-role">{{ request.user.profile.role }}</span>
+                <a href="{% url 'profile' %}"><img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0284c7&color=fff" alt="User"></a>
+            </div>
+        </header>
+        <main class="content-area">
+            <div class="page-header">
+                <h2>Personnel Assignment</h2>
+                <p>Distribute responsibilities by appointing a Senior Authority and specialized Investigators to a case.</p>
+            </div>
+
+            <form id="assignmentForm" method="POST">
+                {% csrf_token %}
+                <div class="assignment-card">
+                    <div class="section-title"><i class='bx bx-folder-open'></i> Investigation Scope</div>
+                    <div class="form-group">
+                        <label>Target Case File</label>
+                        <select name="case_id" required>
+                            <option value="" disabled selected>Select an active case...</option>
+                            {% for case in cases %}
+                                <option value="{{ case.id }}">{{ case.case_id }} - {{ case.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="section-title"><i class='bx bxs-group'></i> Deploy Investigators</div>
+                    <label>Select Investigation Team (Multiple Allowed)</label>
+                    <div class="officer-grid">
+                        {% for investigator in investigators %}
+                        <div class="officer-item">
+                            <input type="checkbox" id="inv{{ investigator.id }}" class="officer-checkbox" name="investigators" value="{{ investigator.id }}">
+                            <label for="inv{{ investigator.id }}" class="officer-label">
+                                <img src="https://ui-avatars.com/api/?name={{ investigator.first_name }}+{{ investigator.last_name }}&background=random" alt="Avatar">
+                                <span>Det. {{ investigator.first_name }} {{ investigator.last_name }}</span>
+                            </label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-assign">
+                    Authorize & Deploy Team <i class='bx bx-paper-plane'></i>
+                </button>
+            </form>
+        </main>
+
+        <footer class="site-footer">
+            <p class="copyright">&copy; 2026 DETAMS Digital Tracking System. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('assignmentForm')
+        .addEventListener('submit', function() {
+            alert("Successfully assigned investigators!");
+        });
+    </script>
+
+</body>
+</html>

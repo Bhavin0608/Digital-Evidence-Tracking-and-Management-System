@@ -9,6 +9,8 @@ urlpatterns = [
     path("dashboard/investigator/", views.investigator_dashboard, name="investigator_dashboard"),
     path("dashboard/auditor/", views.auditor_dashboard, name="auditor_dashboard"),
     path("profile/", views.profile_view, name="profile"),
+    #----------------------------------Cases URLs--------------------------------------------
+    path("assign_investigators/", views.assign_investigators, name="assign_investigators"),
     #---------------------------------- Logout URL ------------------------------------------
     path("logout/", views.logout_view, name="logout"),
 ]

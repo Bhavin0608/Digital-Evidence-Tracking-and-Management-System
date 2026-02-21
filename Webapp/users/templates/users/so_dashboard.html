@@ -95,7 +95,7 @@
         <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
         <ul class="nav-links">
             <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-            <li><a href="#"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
+            <li><a href="{% url 'assign_investigators' %}"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
             <li><a href="#"><i class='bx bxs-bar-chart-alt-2'></i> Case Progress</a></li>
             <li><a href="#"><i class='bx bxs-lock-open'></i> Close Request</a></li>
             <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
@@ -120,9 +120,9 @@
             <div class="dashboard-grid">
                 <div class="card">
                     <div class="card-icon"><i class='bx bxs-user-voice'></i></div>
-                    <h3>Deploy Investigators</h3>
+                    <h3>Assign Investigators</h3>
                     <p>Assign qualified field agents and investigation officers to the cases initiated by the Administrator.</p>
-                    <a href="#" class="btn-action">Assign Personnel</a>
+                    <a href="{% url 'assign_investigators' %}" class="btn-action">Assign Personnel</a>
                 </div>
 
                 <div class="card">
