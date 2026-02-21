@@ -1,9 +1,12 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 
+from cases.models import Case, CaseMember
+from django.contrib.auth.models import User
 from users.models import UserProfile
 
 #------------------------------ Logout View ---------------------------------------
@@ -174,3 +177,46 @@ def auditor_dashboard(request):
 @login_required
 def profile_view(request):
     return render(request, "users/profile.html")
+
+#------------------------------ Cases related views -------------------------------
+@never_cache
+@login_required
+def assign_investigators(request):
+    user = request.user
+
+    # Fetch only cases assigned to this SO
+    cases = Case.objects.filter(
+        assigned_so=user
+    )
+
+    investigators = User.objects.filter(
+        profile__role="INVESTIGATOR"
+    )
+
+    if request.method == "POST": # after form submitted to assign investigators to the case
+        print(request.POST)
+        case_id = request.POST.get("case_id")
+
+        investigator_ids = request.POST.getlist(
+            "investigators"
+        )
+
+        case = Case.objects.get(id=case_id)
+
+        for inv_id in investigator_ids:
+
+            investigator = User.objects.get(id=inv_id)
+
+            # Create membership (no role field now)
+            CaseMember.objects.get_or_create(
+                case=case,
+                user=investigator
+            )
+
+        return redirect("so_dashboard")
+
+    context = {
+        "cases": cases,
+        "investigators": investigators
+    }
+    return render(request, "users/assign_investigators.html", context)
