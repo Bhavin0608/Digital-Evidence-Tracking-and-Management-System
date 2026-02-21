@@ -6,8 +6,35 @@ from .models import Evidence
 from .forms import EvidenceUploadForm
 from core.hash_service import HashService
 from core.rbac_service import RBACService
+from custody.models import CustodyLog
+from django.contrib import messages
 
+@login_required
+def verify_evidence(request, evidence_id):
+    evidence = get_object_or_404(Evidence, id=evidence_id)
 
+    # RBAC check: user must be able to access the case
+    if not RBACService.can_access_case(request.user, evidence.case):
+        return HttpResponseForbidden("You do not have permission to verify this evidence.")
+
+    # Recalculate hash
+    is_valid = HashService.verify_hash(evidence.file, evidence.sha256_hash)
+
+    # Log verification attempt
+    CustodyLog.objects.create(
+        case=evidence.case,
+        evidence=evidence,
+        performed_by=request.user,
+        action_type="VERIFY",
+        remarks="Integrity verified: VALID" if is_valid else "Integrity verified: COMPROMISED"
+    )
+
+    if is_valid:
+        messages.success(request, "Evidence integrity verified successfully.")
+    else:
+        messages.error(request, "Evidence integrity compromised!")
+
+    return redirect("case_detail", case_id=evidence.case_id)
 @login_required
 def upload_evidence(request, case_id):
 
@@ -39,6 +66,13 @@ def upload_evidence(request, case_id):
 
             # CustodyLog will be added later
 
+            CustodyLog.objects.create(
+                case=case,
+                evidence=evidence,
+                performed_by=request.user,
+                action_type="UPLOAD",
+                remarks="Evidence uploaded to case."
+            )
             return redirect("case_detail", case_id=case.id)
 
     else:

@@ -23,5 +23,6 @@ urlpatterns = [
     path("", include("users.urls")),
     path("", root_redirect, name="root"),
     path("evidence/", include("evidence.urls")),
+    path("cases/", include("cases.urls")),
 ]
 

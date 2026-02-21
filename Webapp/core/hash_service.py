@@ -5,13 +5,13 @@ class HashService:
 
     @staticmethod
     def generate_sha256(file):
-        """
-        Generate SHA-256 hash for an uploaded file.
-        """
         sha256 = hashlib.sha256()
 
         for chunk in file.chunks():
             sha256.update(chunk)
+
+        # 🔥 IMPORTANT: Reset pointer after reading
+        file.seek(0)
 
         return sha256.hexdigest()
 

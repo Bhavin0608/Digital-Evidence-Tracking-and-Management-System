@@ -5,19 +5,20 @@ class RBACService:
 
     @staticmethod
     def can_access_case(user, case):
-        """
-        General case access check.
-        """
 
-        # Admin full access
         if user.is_superuser:
             return True
 
-        # Senior Officer assigned to case
+        if not hasattr(user, "profile"):
+            return False
+
+        # Auditor can access all cases (read-only role)
+        if user.profile.role == "AUDITOR":
+            return True
+
         if case.assigned_so == user:
             return True
 
-        # Investigator assigned via CaseMember
         if CaseMember.objects.filter(case=case, user=user).exists():
             return True
 
