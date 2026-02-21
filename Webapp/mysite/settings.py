@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     "users",
     "cases",
     "evidence",
-    "core"
+    "core",
+    "custody",
 ]
 
 MIDDLEWARE = [
