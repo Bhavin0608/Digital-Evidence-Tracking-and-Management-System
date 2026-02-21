@@ -11,7 +11,7 @@ from core.rbac_service import RBACService
 @login_required
 def upload_evidence(request, case_id):
 
-    case = get_object_or_404(Case, case_id=case_id)
+    case = get_object_or_404(Case, pk=case_id)
 
 
     # ===== RBAC CHECK (Temporary Basic Check) =====
