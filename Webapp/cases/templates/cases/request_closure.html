@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Closure | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #0284c7;    
+            --secondary: #0ea5e9;  
+            --bg-light: #f8fafc;   
+            --text-dark: #0f172a;  
+            --text-muted: #64748b; 
+            --border: #e2e8f0;     
+            --white: #ffffff;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2.2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active, .nav-links a:hover { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; }
+        
+        header {
+            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .badge-role { background: #e0f2fe; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+
+
+        /* --- CONTENT --- */
+        .content { padding: 40px; max-width: 800px; margin: 0 auto; width: 100%; }
+        
+        .page-header { margin-bottom: 30px; }
+        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); }
+        .page-header p { color: var(--text-muted); margin-top: 5px; }
+
+        /* --- INFO BOX --- */
+        .alert-box {
+            background: #fffbeb; border: 1px solid #fef3c7; color: #92400e;
+            padding: 15px 20px; border-radius: 12px; font-size: 0.85rem;
+            margin-bottom: 30px; display: flex; align-items: flex-start; gap: 12px;
+        }
+        .alert-box i { font-size: 1.2rem; margin-top: 2px; }
+
+        /* --- FORM CARD --- */
+        .form-card {
+            background: var(--white); padding: 40px; border-radius: 24px;
+            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .input-group { margin-bottom: 25px; }
+        label { 
+            display: block; font-size: 0.75rem; font-weight: 800; 
+            color: var(--text-dark); text-transform: uppercase; 
+            letter-spacing: 1px; margin-bottom: 10px; 
+        }
+
+        select, textarea {
+            width: 100%; padding: 14px 18px; background: var(--bg-light); 
+            border: 1px solid var(--border); border-radius: 12px; 
+            font-size: 0.95rem; font-weight: 600; outline: none; transition: 0.3s;
+        }
+        select:focus, textarea:focus { border-color: var(--primary); background: white; }
+
+        textarea { resize: vertical; min-height: 150px; }
+
+        /* --- DECLARATION --- */
+        .declaration {
+            display: flex; gap: 12px; align-items: flex-start;
+            margin-bottom: 30px; padding: 15px; background: #f1f5f9; border-radius: 10px;
+        }
+        .declaration input { margin-top: 4px; }
+        .declaration span { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+
+        /* --- BUTTONS --- */
+        .btn-submit {
+            width: 100%; padding: 16px; background: var(--danger); color: white;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 10px; transition: 0.3s;
+        }
+        .btn-submit:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 10px 15px rgba(239, 68, 68, 0.2); }
+
+        footer { padding: 30px; text-align: center; border-top: 1px solid var(--border); background: var(--white); margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="{% url 'assign_investigators' %}"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
+            <li><a href="{% url 'monitor_progress' %}"><i class='bx bxs-bar-chart-alt-2'></i> Case Progress</a></li>
+            <li><a href="#" class="active"><i class='bx bxs-lock-open'></i> Close Request</a></li>
+            <!-- <li style="margin-top: auto;"><a href="../index.html"><i class='bx bxs-log-out-circle'></i> Logout</a></li> -->
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <header>
+            <span style="font-weight: 700; color: var(--text-muted);">Senior Officer Portal</span>
+            <div class="user-profile">
+                <span class="badge-role">SUPERVISOR</span>
+                <img src="https://ui-avatars.com/api/?name=Senior+Officer&background=0284c7&color=fff" alt="User">
+            </div>
+        </header>
+
+        <main class="content">
+            <div class="page-header">
+                <h2>Request Case Closure</h2>
+                <p>Submit this form to notify the System Admin that the investigation is complete and the case is ready for final archiving.</p>
+            </div>
+
+            <div class="alert-box">
+                <i class='bx bxs-info-circle'></i>
+                <p>Once submitted, this case will enter a "Pending Closure" state. You will no longer be able to assign investigators, and IOs will not be able to add further evidence unless the request is denied by the Admin.</p>
+            </div>
+
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <label>Select Case for Closure</label>
+                        <select name="case_id" required>
+                            <option value="" disabled selected>Select an active case...</option>
+                            {% for case in cases %}
+                                <option value="{{ case.id }}">{{ case.case_id }} - {{ case.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Investigation Summary & Justification</label>
+                        <textarea name="summary" placeholder="Provide a summary of the findings and the reason for concluding this investigation..." required></textarea>
+                    </div>
+
+                    <div class="declaration">
+                        <input type="checkbox" required>
+                        <span>I certify that all evidence has been collected, hashed, and verified. I recommend the permanent locking of this case file.</span>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        Submit Closure Request to Admin <i class='bx bx-send'></i>
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
+                &copy; 2026 DETAMS | Legal Chain of Custody Handover
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

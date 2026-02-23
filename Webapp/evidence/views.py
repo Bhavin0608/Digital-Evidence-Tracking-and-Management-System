@@ -1,3 +1,4 @@
+from unittest import case
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
@@ -39,6 +40,9 @@ from cases.models import Case, CaseMember
 
 @login_required
 def upload_evidence(request):
+
+    if case.status != "IN_PROGRESS":
+        return HttpResponseForbidden("Case is locked.")
 
     # Fetch only cases assigned to this investigator
     assigned_cases = Case.objects.filter(

@@ -24,6 +24,7 @@ class Case(models.Model):
     STATUS_CHOICES = [
         ("OPEN", "Open"),
         ("IN_PROGRESS", "In Progress"),
+        ("PENDING_CLOSURE", "Pending Closure"),
         ("CLOSED", "Closed"),
     ]
 
@@ -81,6 +82,25 @@ class Case(models.Model):
         null=True,
         related_name="assigned_cases",
         help_text="Senior Officer assigned to this case"
+    )
+
+    closure_summary = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Summary provided during closure request"
+    )
+
+    closure_requested_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="closure_requests"
+    )
+
+    closure_requested_at = models.DateTimeField(
+        null=True,
+        blank=True
     )
 
     created_at = models.DateTimeField(auto_now_add=True)

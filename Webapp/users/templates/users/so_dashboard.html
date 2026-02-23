@@ -97,7 +97,7 @@
             <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="{% url 'assign_investigators' %}"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
             <li><a href="{% url 'monitor_progress' %}"><i class='bx bxs-bar-chart-alt-2'></i> Case Progress</a></li>
-            <li><a href="#"><i class='bx bxs-lock-open'></i> Close Request</a></li>
+            <li><a href="{% url 'request_closure' %}"><i class='bx bxs-lock-open'></i> Close Request</a></li>
             <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
         </ul>
     </div>
@@ -136,7 +136,7 @@
                     <div class="card-icon"><i class='bx bxs-door-open'></i></div>
                     <h3>Request Case Close</h3>
                     <p>Formalize a closure request to the Admin once an investigation has reached a conclusive resolution.</p>
-                    <a href="#" class="btn-action" >Initiate Closure</a>
+                    <a href="{% url 'request_closure' %}" class="btn-action" >Initiate Closure</a>
                 </div>
             </div>
         </main>
