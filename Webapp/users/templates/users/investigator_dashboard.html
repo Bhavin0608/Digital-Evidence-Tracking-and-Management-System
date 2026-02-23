@@ -97,7 +97,7 @@
         <ul class="nav-links">
             <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="#"><i class='bx bxs-edit-alt'></i> Case Notes</a></li>
-            <li><a href="#"><i class='bx bxs-file-plus'></i> Add Evidence</a></li>
+            <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i> Add Evidence</a></li>
             <li><a href="#"><i class='bx bxs-comment-detail'></i> Observations</a></li>
             <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
         </ul>
@@ -130,7 +130,7 @@
                     <div class="card-icon"><i class='bx bxs-cloud-upload'></i></div>
                     <h3>Upload Evidence</h3>
                     <p>Securely upload digital assets and generate an immediate SHA-256 cryptographic hash signature.</p>
-                    <a href="#" class="btn-action">Log New Asset</a>
+                    <a href="{% url 'upload_evidence' %}" class="btn-action">Log New Asset</a>
                 </div>
 
                 <div class="card">

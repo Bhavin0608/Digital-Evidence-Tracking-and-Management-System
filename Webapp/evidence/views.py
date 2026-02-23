@@ -35,50 +35,53 @@ def verify_evidence(request, evidence_id):
         messages.error(request, "Evidence integrity compromised!")
 
     return redirect("case_detail", case_id=evidence.case_id)
+from cases.models import Case, CaseMember
+
 @login_required
-def upload_evidence(request, case_id):
+def upload_evidence(request):
 
-    case = get_object_or_404(Case, pk=case_id)
-
-
-    # ===== RBAC CHECK (Temporary Basic Check) =====
-    if not RBACService.can_upload_evidence(request.user, case):
-        return HttpResponseForbidden("You do not have permission to upload evidence.")
+    # Fetch only cases assigned to this investigator
+    assigned_cases = Case.objects.filter(
+        members__user=request.user
+    )
 
     if request.method == "POST":
-        form = EvidenceUploadForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            file = form.cleaned_data["file"]
+        case_id = request.POST.get("case_id")
+        case = get_object_or_404(Case, id=case_id)
 
+        # RBAC check
+        if not CaseMember.objects.filter(
+            case=case,
+            user=request.user
+        ).exists():
+            return HttpResponseForbidden("Not assigned to this case.")
 
+        file = request.FILES.get("file")
+
+        if file:
             sha256_hash = HashService.generate_sha256(file)
 
             evidence = Evidence.objects.create(
                 case=case,
                 file=file,
                 file_name=file.name,
-                file_type = file.content_type,
+                file_type=file.content_type,
                 file_size=file.size,
                 sha256_hash=sha256_hash,
                 uploaded_by=request.user
             )
-
-            # CustodyLog will be added later
 
             CustodyLog.objects.create(
                 case=case,
                 evidence=evidence,
                 performed_by=request.user,
                 action_type="UPLOAD",
-                remarks="Evidence uploaded to case."
+                remarks="Evidence uploaded."
             )
-            return redirect("case_detail", case_id=case.id)
 
-    else:
-        form = EvidenceUploadForm()
+            return redirect("investigator_dashboard")
 
     return render(request, "evidence/upload.html", {
-        "form": form,
-        "case": case
+        "cases": assigned_cases
     })
