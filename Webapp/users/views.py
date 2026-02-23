@@ -63,14 +63,16 @@ def login_view(request):
         if user is not None:
 
             # 🔹 Check if profile exists # if admin trys to login in then it deny
-            if not hasattr(user, "profile"):
-                return render(
-                    request,
-                    "users/login.html",
-                    {"error": "No authorized user exists."}
-                )
+            # if not hasattr(user, "profile"):
+            #     return render(
+            #         request,
+            #         "users/login.html",
+            #         {"error": "No authorized user exists."}
+            #     )
 
             login(request, user)
+            if user.is_superuser:
+                return redirect("/admin/")
 
             # 🔹 Get role
             role = user.profile.role
