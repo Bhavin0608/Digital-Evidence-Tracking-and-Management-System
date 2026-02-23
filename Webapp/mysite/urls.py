@@ -24,5 +24,6 @@ urlpatterns = [
     path("", root_redirect, name="root"),
     path("evidence/", include("evidence.urls")),
     path("cases/", include("cases.urls")),
+    path("custody/", include("custody.urls")),
 ]
 

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chain of Custody | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #059669;    --secondary: #10b981;  
+            --bg-light: #f8fafc;   --text-dark: #0f172a;  
+            --text-muted: #64748b; --border: #e2e8f0;     
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2.2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active, .nav-links a:hover { background: rgba(16, 185, 129, 0.1); color: var(--secondary); }
+
+        /* --- MAIN --- */
+        .main-wrapper { margin-left: 280px; flex: 1; padding: 40px; }
+        .headers { margin-bottom: 30px; }
+        
+        /* Search/Filter Box */
+        .search-container {
+            background: white; padding: 25px; border-radius: 16px; border: 1px solid var(--border);
+            display: flex; gap: 20px; margin-bottom: 40px; align-items: center;
+        }
+        .search-container select { flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); font-weight: 700; outline: none; }
+
+        /* --- THE CHAIN TIMELINE --- */
+        .timeline { position: relative; max-width: 900px; margin: 0 auto; padding: 20px 0; }
+        .timeline::before {
+            content: ''; position: absolute; left: 31px; top: 0;
+            width: 4px; height: 100%; background: var(--border); border-radius: 2px;
+        }
+
+        .timeline-link { position: relative; margin-bottom: 50px; padding-left: 80px; }
+        
+        /* Circle Icon */
+        .link-icon {
+            position: absolute; left: 0; top: 0; width: 66px; height: 66px;
+            background: white; border: 4px solid var(--border); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.8rem;
+            color: var(--text-muted); z-index: 2; transition: 0.3s;
+        }
+        .timeline-link.verified .link-icon { border-color: var(--primary); color: var(--primary); }
+
+        .link-content {
+            background: white; padding: 25px; border-radius: 20px; border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .link-content h3 { font-size: 1.1rem; font-weight: 800; color: var(--text-dark); margin-bottom: 5px; }
+        .link-content p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 15px; }
+
+        .link-meta {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;
+            padding-top: 15px; border-top: 1px dashed var(--border);
+        }
+        .meta-item { font-size: 0.75rem; font-weight: 800; color: var(--text-dark); }
+        .meta-item span { display: block; color: var(--text-muted); font-weight: 500; margin-top: 2px; }
+
+        .hash-seal {
+            display: inline-block; font-family: monospace; font-size: 0.7rem;
+            background: #f1f5f9; padding: 4px 10px; border-radius: 6px; margin-top: 10px;
+        }
+
+        .badge { font-size: 0.65rem; padding: 4px 10px; border-radius: 50px; font-weight: 800; margin-left: 10px; }
+        .badge-success { background: #d1fae5; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="#" class="active"><i class='bx bx-history'></i> Chain of Custody</a></li>
+            <li><a href="#"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
+            <li><a href="#"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="header">
+            <h2>Chain of Custody Record</h2>
+            <p style="color: var(--text-muted);">Unbroken tracking of digital evidence handling and transfers.</p>
+        </div>
+
+        <div class="search-container">
+            <i class='bx bx-search' style="font-size: 1.5rem; color: var(--primary);"></i>
+            <form method="GET">
+                <select name="evidence_id" onchange="this.form.submit()">
+                    <option value="">Select Evidence Asset...</option>
+
+                    {% for evidence in evidences %}
+                        <option value="{{ evidence.id }}"
+                            {% if selected_evidence and evidence.id == selected_evidence.id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ evidence.file_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+            <button style="background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700;">Trace Asset</button>
+        </div>
+
+        
+
+        <div class="timeline">
+            {% if logs %}
+                {% for log in logs %}
+                    <div class="timeline-link verified">
+                        <div class="link-icon">
+                            <i class='bx bx-history'></i>
+                        </div>
+
+                        <div class="link-content">
+                            <h3>
+                                {{ log.action_type }}
+                            </h3>
+
+                            <p>
+                                {{ log.remarks }}
+                            </p>
+
+                            {% if log.evidence %}
+                                <div class="hash-seal">
+                                    HASH: {{ log.evidence.sha256_hash }}
+                                </div>
+                            {% endif %}
+
+                            <div class="link-meta">
+                                <div class="meta-item">
+                                    OFFICER
+                                    <span>{{ log.performed_by.get_full_name }}</span>
+                                </div>
+
+                                <div class="meta-item">
+                                    TIMESTAMP
+                                    <span>{{ log.timestamp|date:"M d, Y h:i A" }}</span>
+                                </div>
+
+                                <div class="meta-item">
+                                    CASE
+                                    <span>{{ log.case.case_id }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            {% else %}
+                <p>No custody records found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
