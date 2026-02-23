@@ -11,6 +11,7 @@ urlpatterns = [
     path("profile/", views.profile_view, name="profile"),
     #----------------------------------Cases URLs--------------------------------------------
     path("assign_investigators/", views.assign_investigators, name="assign_investigators"),
+    path("monitor_progress/", views.monitor_progress, name="monitor_progress"),
     #---------------------------------- Logout URL ------------------------------------------
     path("logout/", views.logout_view, name="logout"),
 ]

@@ -1,3 +1,4 @@
+from datetime import date
 from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
@@ -5,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import logout
 
+from custody.models import CustodyLog
+from evidence.models import Evidence
 from cases.models import Case, CaseMember
 from django.contrib.auth.models import User
 from users.models import UserProfile
@@ -220,3 +223,50 @@ def assign_investigators(request):
         "investigators": investigators
     }
     return render(request, "users/assign_investigators.html", context)
+
+#------------------------------ Investigator actions -------------------------------
+
+@login_required
+def monitor_progress(request):
+
+    # Only cases assigned to this SO
+    cases = Case.objects.filter(
+        assigned_so=request.user
+    )
+
+    selected_case = None
+    evidences = None
+    timeline = None
+    days_active = None
+    if selected_case:
+        days_active = (date.today() - selected_case.created_at.date()).days
+
+    case_id = request.GET.get("case_id")
+
+    if case_id:
+        selected_case = Case.objects.get(id=case_id)
+
+        evidences = Evidence.objects.filter(
+            case=selected_case
+        )
+
+        timeline = CustodyLog.objects.filter(
+            case=selected_case
+        ).order_by("-timestamp")
+
+    if selected_case and selected_case.assigned_so != request.user:
+        return HttpResponseForbidden("Not allowed")
+    
+    context = {
+        "cases": cases,
+        "selected_case": selected_case,
+        "evidences": evidences,
+        "timeline": timeline,
+        "days_active": days_active,
+    }
+
+    return render(
+        request,
+        "users/monitor_progress.html",
+        context
+    )
