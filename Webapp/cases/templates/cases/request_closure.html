@@ -1,180 +1,271 @@
+{% csrf_token %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request Closure | EvidenceLock</title>
+    <title>Vault Closure | EvidenceLock</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --primary: #0284c7;    
-            --secondary: #0ea5e9;  
-            --bg-light: #f8fafc;   
-            --text-dark: #0f172a;  
-            --text-muted: #64748b; 
-            --border: #e2e8f0;     
+            --deep: #0b132b;    /* Deep Navy */
+            --blush: #5bc0be;   /* Tech Cyan */
+            --sand: #f1f4f9;    /* Light Steel */
+            --muted: #4a5568;   /* Slate Grey */
+            --mauve: #9a8c98;   /* Muted Purple */
             --white: #ffffff;
-            --danger: #ef4444;
+            --warning: #ffb703; /* Amber */
+            --danger: #e63946;  /* High Alert Red */
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--sand); 
+            color: var(--deep);
+            display: flex; 
+            min-height: 100vh;
+            padding: 30px;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        /* --- DYNAMIC BACKGROUND ORBS --- */
+        .ambient-orb {
+            position: fixed;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(230, 57, 70, 0.05) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; bottom: -200px; left: -100px; filter: blur(100px);
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+            position: fixed; /* Locked to the viewport */
+            top: 30px;       /* Match your body padding */
+            left: 30px;      /* Match your body padding */
+            width: 260px;
+            height: calc(100vh - 60px); /* Fill the vertical space */
+            z-index: 1000;   /* Stay on top of all other elements */
+            
+            /* Keep your existing background, border-radius, and flex styles here */
+            background: var(--deep);
+            border-radius: 35px;
+            display: flex;
+            flex-direction: column;
+            padding: 35px 22px;
         }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
-        .logo i { color: var(--secondary); font-size: 2.2rem; }
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 8px; }
-        .nav-links a {
-            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
-            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
-        }
-        .nav-links a.active, .nav-links a:hover { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+        .nav-brand { min-width: 40px; height: 40px; background: var(--blush); border-radius: 14px; display: grid; place-items: center; margin-bottom: 60px; }
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; }
+        .nav-links a { display: flex; align-items: center; text-decoration: none; color: var(--mauve); transition: 0.3s; }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { margin-left: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
 
-        /* --- MAIN WRAPPER --- */
-        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; }
-        
+        /* --- MAIN CONTAINER --- */
+        .main-container {
+            flex: 1;
+            margin-left: 290px; /* Sidebar width (260px) + Gap (30px) */
+            display: flex;
+            flex-direction: column;
+        }
+
         header {
-            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
         }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
-        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
-        .badge-role { background: #e0f2fe; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
-
-
-        /* --- CONTENT --- */
-        .content { padding: 40px; max-width: 800px; margin: 0 auto; width: 100%; }
-        
-        .page-header { margin-bottom: 30px; }
-        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); }
-        .page-header p { color: var(--text-muted); margin-top: 5px; }
-
-        /* --- INFO BOX --- */
-        .alert-box {
-            background: #fffbeb; border: 1px solid #fef3c7; color: #92400e;
-            padding: 15px 20px; border-radius: 12px; font-size: 0.85rem;
-            margin-bottom: 30px; display: flex; align-items: flex-start; gap: 12px;
+        .header-title h1 {
+            font-family: 'Plus Jakarta Sans', serif; font-size: 3rem; font-weight: 500; color: var(--deep);
         }
-        .alert-box i { font-size: 1.2rem; margin-top: 2px; }
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+        }
+        /* --- PROFILE BUTTON --- */
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white);
+            padding: 6px 18px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid var(--sand);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
+        }
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
 
-        /* --- FORM CARD --- */
-        .form-card {
-            background: var(--white); padding: 40px; border-radius: 24px;
-            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        /* --- ALERT BOX --- */
+        .protocol-alert {
+            background: #fff0f0; border-left: 5px solid var(--danger);
+            padding: 25px 30px; border-radius: 25px; margin-bottom: 35px;
+            display: flex; gap: 20px; align-items: flex-start;
+            box-shadow: 0 10px 20px rgba(230, 57, 70, 0.05);
+            /* margin-left: 20%;
+            margin-right: 20%; */
+        }
+        .protocol-alert i { font-size: 1.8rem; color: var(--danger); }
+        .protocol-alert p { font-size: 0.85rem; line-height: 1.6; color: #7a2b2b; font-weight: 600; }
+
+        /* --- GLASS CARD --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 45px; padding: 50px;
+            position: relative; box-shadow: 0 15px 35px rgba(11, 19, 43, 0.04);
+            /* margin-left: 20%;
+            margin-right: 20%; */
+        }
+        .glass-card::after {
+            content: 'FINAL'; position: absolute; right: 20px; bottom: -10px;
+            font-family: 'Fraunces'; font-style: italic; font-size: 7rem; opacity: 0.03; pointer-events: none;
         }
 
-        .input-group { margin-bottom: 25px; }
-        label { 
-            display: block; font-size: 0.75rem; font-weight: 800; 
-            color: var(--text-dark); text-transform: uppercase; 
-            letter-spacing: 1px; margin-bottom: 10px; 
+        /* --- FORM ELEMENTS --- */
+        .input-group { margin-bottom: 30px; }
+        .input-group label {
+            display: block; font-family: 'JetBrains Mono'; font-size: 0.7rem; font-weight: 600;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;
         }
 
-        select, textarea {
-            width: 100%; padding: 14px 18px; background: var(--bg-light); 
-            border: 1px solid var(--border); border-radius: 12px; 
-            font-size: 0.95rem; font-weight: 600; outline: none; transition: 0.3s;
+        .form-control {
+            width: 100%; padding: 20px 25px; background: var(--white);
+            border: 1px solid rgba(0,0,0,0.05); border-radius: 20px;
+            font-family: 'Plus Jakarta Sans'; font-size: 1rem; font-weight: 600;
+            color: var(--deep); outline: none; transition: 0.3s;
         }
-        select:focus, textarea:focus { border-color: var(--primary); background: white; }
+        .form-control:focus { border-color: var(--danger); box-shadow: 0 0 0 4px rgba(230, 57, 70, 0.1); }
 
-        textarea { resize: vertical; min-height: 150px; }
+        textarea.form-control { min-height: 160px; resize: none; line-height: 1.6; }
 
-        /* --- DECLARATION --- */
-        .declaration {
-            display: flex; gap: 12px; align-items: flex-start;
-            margin-bottom: 30px; padding: 15px; background: #f1f5f9; border-radius: 10px;
+        /* --- CERTIFICATION CHECKBOX --- */
+        .certify-box {
+            display: flex; gap: 18px; align-items: center;
+            background: #fdf2f2; /* Subtle red tint */
+            padding: 22px; border-radius: 20px; margin-bottom: 40px;
+            border: 1px solid rgba(230, 57, 70, 0.1);
         }
-        .declaration input { margin-top: 4px; }
-        .declaration span { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
-
-        /* --- BUTTONS --- */
-        .btn-submit {
-            width: 100%; padding: 16px; background: var(--danger); color: white;
-            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 10px; transition: 0.3s;
+        .certify-box input[type="checkbox"] {
+            width: 22px; height: 22px; cursor: pointer; accent-color: var(--danger);
         }
-        .btn-submit:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 10px 15px rgba(239, 68, 68, 0.2); }
+        .certify-box span { font-size: 0.85rem; font-weight: 600; line-height: 1.5; color: var(--muted); }
 
-        footer { padding: 30px; text-align: center; border-top: 1px solid var(--border); background: var(--white); margin-top: auto; }
+        /* --- THE PRIMARY ACTION BUTTON --- */
+        .btn-finalize {
+            width: 100%; border: 2px solid var(--danger); padding: 24px;
+            background: var(--white); color: var(--danger);
+            border-radius: 22px; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800; font-size: 0.95rem;
+            text-transform: uppercase; letter-spacing: 3px;
+            display: flex; align-items: center; justify-content: center; gap: 15px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            /* box-shadow: 0 12px 28px -5px rgba(230, 57, 70, 0.4); */
+        }
+
+        .btn-finalize i { font-size: 1.3rem; }
+
+        .btn-finalize:hover {
+            background: #c12a36; /* Darker focused red */
+            color: var(--white);
+            transform: translateY(-4px);
+            /* box-shadow: 0 22px 35px -5px rgba(230, 57, 70, 0.5); */
+        }
+
+        .btn-finalize:active { transform: translateY(-1px); }
+
+        footer { margin-top: 10px; padding-bottom: 20px; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted); text-align: center; letter-spacing: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
-        <ul class="nav-links">
-            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-            <li><a href="{% url 'assign_investigators' %}"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
-            <li><a href="{% url 'monitor_progress' %}"><i class='bx bxs-bar-chart-alt-2'></i> Case Progress</a></li>
-            <li><a href="#" class="active"><i class='bx bxs-lock-open'></i> Close Request</a></li>
-            <!-- <li style="margin-top: auto;"><a href="../index.html"><i class='bx bxs-log-out-circle'></i> Logout</a></li> -->
-        </ul>
-    </div>
+    <div class="ambient-orb"></div>
 
-    <div class="main-wrapper">
+    <aside class="sidebar">
+        <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'assign_investigators' %}"><i class='bx bx-paper-plane'></i><span>Deploy Team</span></a></li>
+            <li><a href="{% url 'monitor_progress' %}"><i class='bx bx-scan'></i><span>Case Insight</span></a></li>
+            <li><a href="#" class="active"><i class='bx bx-shield-quarter'></i><span>Closure</span></a></li>
+            <li style="margin-top: auto;"><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+    
+    <main class="main-container">
         <header>
-            <span style="font-weight: 700; color: var(--text-muted);">Senior Officer Portal</span>
-            <div class="user-profile">
-                <span class="badge-role">SUPERVISOR</span>
-                <img src="https://ui-avatars.com/api/?name=Senior+Officer&background=0284c7&color=fff" alt="User">
+            <div class="header-title">
+                <h1>Request For Vault Closure</h1>
+                <p class="subtitle">DETAMS Protocol · 2026</p>
+            </div>
+
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
             </div>
         </header>
 
-        <main class="content">
-            <div class="page-header">
-                <h2>Request Case Closure</h2>
-                <p>Submit this form to notify the System Admin that the investigation is complete and the case is ready for final archiving.</p>
-            </div>
+        <div class="protocol-alert">
+            <i class='bx bxs-error-alt'></i>
+            <p>
+                <strong>SYSTEM WARNING:</strong> Termination of this case node is permanent. 
+                Once submitted, field data ingestion will be locked and investigators will be reassigned. 
+                This action requires secondary Admin verification.
+            </p>
+        </div>
 
-            <div class="alert-box">
-                <i class='bx bxs-info-circle'></i>
-                <p>Once submitted, this case will enter a "Pending Closure" state. You will no longer be able to assign investigators, and IOs will not be able to add further evidence unless the request is denied by the Admin.</p>
-            </div>
-
-            <div class="form-card">
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <label>Select Case for Closure</label>
-                        <select name="case_id" required>
-                            <option value="" disabled selected>Select an active case...</option>
+        <div class="glass-card">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <label>Operational Case Selection</label>
+                    <div style="position: relative;">
+                        <select name="case_id" class="form-control" required style="appearance: none; cursor: pointer; padding-right: 50px;">
+                            <option value="" disabled selected>Query active case node...</option>
                             {% for case in cases %}
-                                <option value="{{ case.id }}">{{ case.case_id }} - {{ case.title }}</option>
+                                <option value="{{ case.id }}">FILE_{{ case.case_id }} // {{ case.title|upper }}</option>
                             {% endfor %}
                         </select>
+                        <i class='bx bx-chevron-down' style="position: absolute; right: 25px; top: 22px; color: var(--danger); font-size: 1.2rem;"></i>
                     </div>
+                </div>
 
-                    <div class="input-group">
-                        <label>Investigation Summary & Justification</label>
-                        <textarea name="summary" placeholder="Provide a summary of the findings and the reason for concluding this investigation..." required></textarea>
-                    </div>
+                <div class="input-group">
+                    <label>Closure Justification & Summary</label>
+                    <textarea name="summary" class="form-control" placeholder="Detail the final forensic findings and justification for vault archival..." required></textarea>
+                </div>
 
-                    <div class="declaration">
-                        <input type="checkbox" required>
-                        <span>I certify that all evidence has been collected, hashed, and verified. I recommend the permanent locking of this case file.</span>
-                    </div>
+                <div class="certify-box">
+                    <input type="checkbox" required>
+                    <span>I verify that all evidence hashes have been validated and the digital chain of custody is complete.</span>
+                </div>
 
-                    <button type="submit" class="btn-submit">
-                        Submit Closure Request to Admin <i class='bx bx-send'></i>
-                    </button>
-                </form>
-            </div>
-        </main>
+                <button type="submit" class="btn-finalize">
+                    Initialize Vault Closure <i class='bx bx-lock-alt'></i>
+                </button>
+            </form>
+        </div>
 
         <footer>
-            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
-                &copy; 2026 DETAMS | Legal Chain of Custody Handover
-            </p>
+            &copy; 2026 Digital Evidence Tracking & Management System | All Rights Reserved
         </footer>
-    </div>
+    </main>
+
 </body>
 </html>

@@ -1,201 +1,270 @@
+{% csrf_token %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitor Progress | EvidenceLock</title>
+    <title>Case Insight | EvidenceLock</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --primary: #0284c7;    
-            --secondary: #0ea5e9;  
-            --bg-light: #f8fafc;   
-            --text-dark: #0f172a;  
-            --text-muted: #64748b; 
-            --border: #e2e8f0;     
+            --deep: #0b132b;    /* Deep Navy */
+            --blush: #5bc0be;   /* Tech Cyan */
+            --sand: #f1f4f9;    /* Light Steel */
+            --muted: #4a5568;   /* Slate Grey */
+            --mauve: #9a8c98;   /* Muted Purple */
             --white: #ffffff;
-            --success: #10b981;
+            --warning: #ffb703; /* Amber */
+            --danger: #e63946;  /* High Alert Red */
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--sand); 
+            color: var(--deep);
+            display: flex; 
+            min-height: 100vh;
+            padding: 30px;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        /* --- BACKGROUND ELEMENTS --- */
+        .ambient-orb {
+            position: fixed;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(91, 192, 190, 0.1) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; top: -100px; right: -100px; filter: blur(80px);
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+            position: fixed; /* Locked to the viewport */
+            top: 30px;       /* Match your body padding */
+            left: 30px;      /* Match your body padding */
+            width: 260px;
+            height: calc(100vh - 60px); /* Fill the vertical space */
+            z-index: 1000;   /* Stay on top of all other elements */
+            
+            /* Keep your existing background, border-radius, and flex styles here */
+            background: var(--deep);
+            border-radius: 35px;
+            display: flex;
+            flex-direction: column;
+            padding: 35px 22px;
         }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
-        .logo i { color: var(--secondary); font-size: 2.2rem; }
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 8px; }
-        .nav-links a {
-            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
-            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
-        }
-        .nav-links a.active, .nav-links a:hover { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+        .nav-brand { min-width: 40px; height: 40px; background: var(--blush); border-radius: 14px; display: grid; place-items: center; margin-bottom: 60px; }
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; }
+        .nav-links a { display: flex; align-items: center; text-decoration: none; color: var(--mauve); transition: 0.3s; }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { margin-left: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
 
-        /* --- MAIN WRAPPER --- */
-        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; }
-        
-        header {
-            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
+        /* --- MAIN CONTAINER --- */
+        .main-container {
+            flex: 1;
+            margin-left: 290px; /* Sidebar width (260px) + Gap (30px) */
+            display: flex;
+            flex-direction: column;
+        }
+
+       header {
             display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
         }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
-        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
-        .badge-role { background: #e0f2fe; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
-
-
-        /* --- CONTENT --- */
-        .content { padding: 40px; max-width: 1100px; width: 100%; margin: 0 auto; }
-        
-        .progress-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .progress-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); }
-
-        /* --- CASE SELECTOR --- */
-        .case-selector-card {
-            background: var(--white); padding: 20px; border-radius: 16px; border: 1px solid var(--border);
-            margin-bottom: 30px; display: flex; align-items: center; gap: 20px;
+        .header-title h1 {
+            font-family: 'Plus Jakarta Sans', serif; font-size: 3rem; font-weight: 500; color: var(--deep);
         }
-        .case-selector-card select {
-            flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-light);
-            font-weight: 700; outline: none; cursor: pointer;
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
         }
-
-        /* --- STATS MINI GRID --- */
-        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
-        .stat-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border); text-align: center; }
-        .stat-box h4 { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .stat-box p { font-size: 1.2rem; font-weight: 800; color: var(--text-dark); }
-
-        /* --- TIMELINE SECTION --- */
-        .timeline-card {
-            background: var(--white); border-radius: 20px; padding: 40px;
-            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        /* --- PROFILE BUTTON --- */
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white);
+            padding: 6px 18px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid var(--sand);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
         }
-        .timeline-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
-        .timeline-title i { color: var(--primary); }
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
 
-        .timeline { position: relative; border-left: 2px solid var(--border); margin-left: 20px; padding-left: 40px; }
-        .timeline-item { position: relative; margin-bottom: 40px; }
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        /* --- CASE SELECTOR TERMINAL --- */
+        .selector-terminal {
+            background: var(--deep); color: var(--white); padding: 25px 40px; border-radius: 30px;
+            display: flex; align-items: center; gap: 25px; margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(11, 19, 43, 0.1);
+        }
+        .selector-terminal label { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--blush); letter-spacing: 2px; }
+        .selector-terminal select {
+            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--white); padding: 12px 20px; border-radius: 15px; font-family: 'Plus Jakarta Sans';
+            font-weight: 600; outline: none; cursor: pointer; transition: 0.3s;
+        }
+        .selector-terminal select:focus { border-color: var(--blush); }
+
+        /* --- STATS NODES --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-node {
+            background: var(--white); padding: 30px; border-radius: 30px; border: 1px solid var(--white);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.03); position: relative; overflow: hidden;
+        }
+        .stat-node h4 { font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-node p { font-size: 1.8rem; font-weight: 700; color: var(--deep); margin-top: 10px; }
+        .stat-node i { position: absolute; right: -10px; bottom: -10px; font-size: 5rem; opacity: 0.03; color: var(--deep); }
+
+        /* --- TIMELINE LOG STREAM --- */
+        .log-container {
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(15px);
+            border-radius: 45px; padding: 50px; border: 1px solid var(--white);
+        }
+        .log-header { font-family: 'Fraunces'; font-style: italic; font-size: 1.8rem; color: var(--deep); margin-bottom: 40px; display: flex; align-items: center; gap: 15px; }
+        .log-header i { color: var(--blush); font-size: 1.5rem; font-style: normal; }
+
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: linear-gradient(to bottom, var(--blush), transparent); }
+
+        .timeline-item { position: relative; margin-bottom: 50px; }
         .timeline-item::before {
-            content: ''; position: absolute; left: -49px; top: 0;
-            width: 16px; height: 16px; background: var(--white);
-            border: 3px solid var(--primary); border-radius: 50%; z-index: 2;
+            content: ''; position: absolute; left: -35px; top: 5px;
+            width: 12px; height: 12px; background: var(--blush); border: 3px solid var(--sand); border-radius: 50%;
+            box-shadow: 0 0 15px rgba(91, 192, 190, 0.5); z-index: 2;
         }
 
-        .item-date { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; display: block; }
-        .item-content { background: var(--bg-light); padding: 20px; border-radius: 14px; border: 1px solid var(--border); }
-        .item-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
-        .item-content p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
-        .item-officer { margin-top: 10px; font-size: 0.8rem; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 5px; }
-        .item-officer i { color: var(--primary); }
+        .log-timestamp { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--mauve); margin-bottom: 12px; display: block; font-weight: 600; }
+        
+        .log-card {
+            background: var(--white); padding: 25px; border-radius: 25px; border: 1px solid rgba(0,0,0,0.02);
+            transition: 0.3s;
+        }
+        .log-card:hover { transform: translateX(10px); box-shadow: 0 15px 30px rgba(11, 19, 43, 0.05); }
+        .log-card h3 { font-size: 1.1rem; color: var(--deep); margin-bottom: 10px; }
+        .log-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 
-        /* --- FOOTER --- */
-        footer { padding: 30px; text-align: center; border-top: 1px solid var(--border); background: var(--white); margin-top: auto; }
+        .log-meta { 
+            margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--sand);
+            display: flex; align-items: center; gap: 10px; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--deep); font-weight: 600;
+        }
+        .log-meta img { width: 20px; height: 20px; border-radius: 50%; }
+
+        footer { margin-top: 40px; padding-bottom: 20px; font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted); text-align: center; letter-spacing: 2px; }
+
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
-        <ul class="nav-links">
-            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-            <li><a href="{% url 'assign_investigators' %}"><i class='bx bxs-user-plus'></i> Assign Team</a></li>
-            <li><a href="#" class="active"><i class='bx bxs-bar-chart-alt-2'></i> Case Progress</a></li>
-            <li><a href="{% url 'request_closure' %}"><i class='bx bxs-lock-open'></i> Close Request</a></li>
-            <!-- <li style="margin-top: auto;"><a href="../index.html"><i class='bx bxs-log-out-circle'></i> Logout</a></li> -->
-        </ul>
-    </div>
+    <div class="ambient-orb"></div>
 
-    <div class="main-wrapper">
+    <aside class="sidebar">
+        <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'assign_investigators' %}"><i class='bx bx-paper-plane'></i><span>Deploy Team</span></a></li>
+            <li><a href="#" class="active"><i class='bx bx-scan'></i><span>Case Insight</span></a></li>
+            <li><a href="{% url 'request_closure' %}"><i class='bx bx-shield-quarter'></i><span>Closure</span></a></li>
+            <li style="margin-top: auto;"><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+    
+    <main class="main-container">
         <header>
-            <span style="font-weight: 700; color: var(--text-muted);">Senior Officer Portal</span>
-            <div class="user-profile">
-                <span class="badge-role">{{ request.user.profile.role }}</span>
-                <a href="{% url 'profile' %}"><img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0284c7&color=fff" alt="User"></a>
+            <div class="header-title">
+                <h1>Case Insight</h1>
+                <p class="subtitle">DETAMS Protocol · 2026</p>
+            </div>
+
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
             </div>
         </header>
 
-        <main class="content">
-            <div class="progress-header">
-                <h2>Investigation Progress Monitor</h2>
-            </div>
-
-            <div class="case-selector-card">
-                <i class='bx bx-filter-alt' style="font-size: 1.5rem; color: var(--primary);"></i>
-                <label style="font-weight: 800; font-size: 0.8rem;">SELECT CASE:</label>
-                <form method="GET">
+        <section class="selector-terminal">
+            <i class='bx bx-terminal' style="font-size: 1.5rem; color: var(--blush);"></i>
+            <label>TARGET_NODE:</label>
+            <form method="GET" style="flex: 1; display: flex;">
                 <select name="case_id" onchange="this.form.submit()">
-                    <option value="">Select Case</option>
-
+                    <option value="">Query Case ID...</option>
                     {% for case in cases %}
-                        <option value="{{ case.id }}"
-                            {% if selected_case and case.id == selected_case.id %}
-                                selected
-                            {% endif %}>
-                            {{ case.case_id }} - {{ case.title }}
+                        <option value="{{ case.id }}" {% if selected_case and case.id == selected_case.id %}selected{% endif %}>
+                            {{ case.case_id }} - {{ case.title|upper }}
                         </option>
                     {% endfor %}
                 </select>
-                </form>
+            </form>
+        </section>
+
+        <div class="stats-grid">
+            <div class="stat-node">
+                <i class='bx bx-file'></i>
+                <h4>Evidence Strings</h4>
+                <p>{{ evidences.count|default:"0" }} Units</p>
+            </div>
+            <!-- <div class="stat-node">
+                <i class='bx bx-git-branch'></i>
+                <h4>Field Observations</h4>
+                <p>12 Nodes</p>
+            </div> -->
+            <div class="stat-node">
+                <i class='bx bx-timer'></i>
+                <h4>Protocol Duration</h4>
+                <p>{{ days_active|default:"0" }} Cycles</p>
+            </div>
+        </div>
+
+        <div class="log-container">
+            <div class="log-header">
+                <i class='bx bx-history'></i> Case Activity Log
             </div>
 
-            <div class="stats-row">
-                <div class="stat-box">
-                    <h4>Evidence Logged</h4>
-                    <p>{{ evidences.count }}</p>
-                </div>
-                <div class="stat-box">
-                    <h4>Notes Added</h4>
-                    <p>12 Observations</p>
-                </div>
-                <div class="stat-box">
-                    <h4>Days Active</h4>
-                    <p>{{ days_active }} Days</p>
-                </div>
-            </div>
-
-            <div class="timeline-card">
-                <div class="timeline-title">
-                    <i class='bx bx-history'></i> Case Activity Timeline (Read-Only)
-                </div>
-
-                <div class="timeline">
-                    {% for log in timeline %}
-                        <div class="timeline-item">
-                            <span class="item-date">
-                                {{ log.timestamp|date:"M d, Y • h:i A" }}
-                            </span>
-
-                            <div class="item-content">
-                                <h3>{{ log.action_type }}</h3>
-
-                                <p>{{ log.remarks }}</p>
-
-                                <div class="item-officer">
-                                    <i class='bx bxs-user'></i>
-                                    {{ log.performed_by.get_full_name }}
-                                </div>
-                            </div>
+            <div class="timeline">
+                {% for log in timeline %}
+                <div class="timeline-item">
+                    <span class="log-timestamp">{{ log.timestamp|date:"d M Y // H:i:s" }} UTC</span>
+                    <div class="log-card">
+                        <h3>{{ log.action_type|upper }}</h3>
+                        <p>{{ log.remarks }}</p>
+                        <div class="log-meta">
+                            <img src="https://ui-avatars.com/api/?name={{ log.performed_by.first_name }}&background=0b132b&color=5bc0be" alt="">
+                            AUTH_BY: {{ log.performed_by.get_full_name|upper }}
                         </div>
-                    {% empty %}
-                        <p>No activity yet.</p>
-                    {% endfor %}
+                    </div>
                 </div>
+                {% empty %}
+                <div style="text-align: center; padding: 40px; color: var(--mauve); font-family: 'JetBrains Mono';">
+                    <i class='bx bx-layer-minus' style="font-size: 3rem; display: block; margin-bottom: 10px; opacity: 0.5;"></i>
+                    NO LOG DATA DETECTED FOR THIS NODE.
+                </div>
+                {% endfor %}
             </div>
-        </main>
+        </div>
 
         <footer>
-            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
-                &copy; 2026 DETAMS | Read-Only Monitoring Protocol
-            </p>
+            &copy; 2026 Digital Evidence Tracking & Management System | All Rights Reserved
         </footer>
-    </div>
+    </main>
 
 </body>
 </html>
