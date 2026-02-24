@@ -31,7 +31,7 @@
             display: flex; 
             min-height: 100vh;
             padding: 30px;
-            /* overflow: hidden; */
+            /* Removed overflow: hidden to allow footer to exist naturally */
             position: relative;
             background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
         }
@@ -62,7 +62,10 @@
             padding: 35px 22px;
             margin-right: 30px;
             transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
+            /* Fixed sidebar so it doesn't scroll with page */
+            position: sticky;
+            top: 30px;
+            height: calc(100vh - 60px);
             box-shadow: 0 30px 60px rgba(11, 19, 43, 0.2);
             z-index: 100;
         }
@@ -92,7 +95,13 @@
         .nav-links a:hover, .nav-links a.active { color: var(--blush); }
 
         /* --- MAIN CONTAINER --- */
-        .main-container { flex: 1; display: flex; flex-direction: column; z-index: 1; }
+        .main-container { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 1; 
+            min-height: calc(100vh - 60px); /* Fill screen height */
+        }
 
         header {
             display: flex; justify-content: space-between; align-items: center;
@@ -128,7 +137,11 @@
         @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
 
         /* --- ACCORDION CARDS --- */
-        .accordion-wrapper { display: flex; gap: 24px;}
+        .accordion-wrapper { 
+            display: flex; 
+            gap: 24px; 
+            margin-bottom: 100px; /* Space for footer */
+        }
 
         .card {
             height: 450px;
@@ -143,6 +156,7 @@
             transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex; flex-direction: column; cursor: pointer;
             box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
+            will-change: flex;
         }
 
         .card:hover {
@@ -150,7 +164,6 @@
             background: var(--deep);
             color: var(--white);
             box-shadow: 0 40px 100px rgba(11, 19, 43, 0.3);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .icon-box {
@@ -195,10 +208,26 @@
         }
         .card:hover .card-index { opacity: 0.1; color: var(--blush); transform: translateY(-20px); }
 
-        footer {
-            padding: 50px; display: flex; justify-content: space-between;
-            font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted); letter-spacing: 2px;
-            margin: auto;
+        /* --- MODERN SEPARATE FOOTER --- */
+        .site-footer {
+            margin-top: auto; /* Pushes footer to bottom of main-container */
+            padding: 30px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 1px;
+        }
+
+        .site-footer .protocol-tag {
+            background: var(--deep);
+            color: var(--blush);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -268,9 +297,9 @@
             </div>
         </section>
 
-        <footer>
-            <div>
-                &copy; 2026 Digital Evidence Tracking & Management System | All Rights Reserved
+        <footer class="site-footer">
+            <div class="footer-left">
+                &copy; 2026 DIGITAL EVIDENCE TRACKING & MANAGEMENT SYSTEM | ALL RIGHTS RESERVED
             </div>
         </footer>
     </main>
