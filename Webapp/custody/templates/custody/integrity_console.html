@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrity Checker | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #059669;    --secondary: #10b981;  
+            --bg-light: #f8fafc;   --text-dark: #0f172a;  
+            --text-muted: #64748b; --border: #e2e8f0;     
+            --white: #ffffff;      --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2.2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active, .nav-links a:hover { background: rgba(16, 185, 129, 0.1); color: var(--secondary); }
+
+        /* --- MAIN --- */
+        .main-wrapper { margin-left: 280px; flex: 1; padding: 40px; }
+        
+        .checker-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+
+        /* Control Panel */
+        .control-panel {
+            background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .btn-scan {
+            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;
+        }
+
+        /* Registry Table */
+        .table-container { 
+            background: white; border-radius: 20px; border: 1px solid var(--border); 
+            overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 20px; background: #f8fafc; text-align: left; font-size: 0.75rem; font-weight: 800; color: var(--text-dark); border-bottom: 2px solid var(--border); }
+        td { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+
+        .hash-box { font-family: monospace; font-size: 0.75rem; background: #f1f5f9; padding: 6px; border-radius: 6px; display: block; margin-top: 5px; }
+        
+        /* Status Badges */
+        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; }
+        .status-valid { background: #d1fae5; color: #065f46; }
+        .status-warning { background: #fee2e2; color: #991b1b; }
+
+        /* Verification Animation Overlay */
+        #scanOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.9); z-index: 1000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+        .scanner-line {
+            width: 300px; height: 2px; background: var(--secondary);
+            box-shadow: 0 0 15px var(--secondary);
+            position: relative; animation: scan 2s infinite ease-in-out;
+        }
+        @keyframes scan {
+            0%, 100% { transform: translateY(-50px); }
+            50% { transform: translateY(50px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="scanOverlay">
+        <i class='bx bx-shield-quarter' style="font-size: 4rem; color: var(--secondary); margin-bottom: 20px;"></i>
+        <h3>Cryptographic Verification in Progress...</h3>
+        <p style="color: #94a3b8; margin: 10px 0 30px;">Recalculating SHA-256 for all local evidence assets</p>
+        <div class="scanner-line"></div>
+    </div>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'auditor_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i> Chain of Custody</a></li>
+            <li><a href="#" class="active"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
+            <li><a href="#"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="header" style="margin-bottom: 30px;">
+            <h2>Integrity Verification Console</h2>
+            <p style="color: var(--text-muted);">Compare origin signatures against live data to detect tampering.</p>
+        </div>
+
+        <div class="checker-grid">
+            <div class="control-panel">
+                <div>
+                    <h4 style="font-weight: 800;">Registry Scan</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Last verified: 2 hours ago</p>
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-scan" onclick="runIntegrityScan();">
+                        <i class='bx bx-radar'></i> Run Global Integrity Check
+                    </button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="25%">Evidence Asset</th>
+                            <th width="35%">Original Collection Hash</th>
+                            <th width="25%">Last System Hash</th>
+                            <th width="15%">Integrity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if results %}
+                            {% for item in results %}
+                            <tr>
+                                <td>
+                                    <b>{{ item.evidence.file_name }}</b><br>
+                                    <small>Case: {{ item.evidence.case.case_id }}</small>
+                                </td>
+                                <td>
+                                    <span class="hash-box">
+                                        {{ item.original_hash|slice:":20" }}...
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="hash-box"
+                                        {% if not item.is_valid %}
+                                            style="color: var(--danger);"
+                                        {% endif %}>
+                                        {{ item.current_hash|slice:":20" }}...
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if item.is_valid %}
+                                        <span class="status-badge status-valid">
+                                            <i class='bx bx-check-double'></i> MATCHED
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge status-warning">
+                                            <i class='bx bx-error-alt'></i> MISMATCH
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" style="text-align:center;">
+                                    No scan executed yet.
+                                </td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        function runIntegrityScan() {
+            const overlay = document.getElementById('scanOverlay');
+
+            // Show animation
+            overlay.style.display = 'flex';
+
+            // Delay 2.5 seconds before real submit
+            setTimeout(() => {
+                overlay.style.opacity = "0";
+                setTimeout(() => {
+                    document.getElementById('scanForm').submit();
+                }, 500);
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
