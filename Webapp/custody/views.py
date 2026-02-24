@@ -16,6 +16,11 @@ from .models import CustodyLog
 @login_required
 def custody_timeline(request):
 
+    user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins Are not allowed to access this page.")
+
     if request.user.profile.role != "AUDITOR":
         return HttpResponseForbidden("Not allowed")
 
@@ -47,8 +52,13 @@ def custody_timeline(request):
 def integrity_console(request):
 
     # Only Auditor allowed
-    if request.user.profile.role != "AUDITOR":
-        return HttpResponseForbidden("Not allowed")
+    user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins Are not allowed to access this page.")
+    
+    if user.profile.role != "AUDITOR":
+        return HttpResponseForbidden("Access denied.")
 
     evidences = Evidence.objects.select_related("case").all()
 
@@ -93,8 +103,13 @@ def integrity_console(request):
 def generate_report(request):
 
     # Only Auditor
-    if request.user.profile.role != "AUDITOR":
-        return HttpResponseForbidden("Not allowed")
+    user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins Are not allowed to access this page.")
+    
+    if user.profile.role != "AUDITOR":
+        return HttpResponseForbidden("Access denied.")
 
     cases = Case.objects.all().order_by("-created_at")
 

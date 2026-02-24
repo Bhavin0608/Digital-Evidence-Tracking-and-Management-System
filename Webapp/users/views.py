@@ -181,6 +181,9 @@ def auditor_dashboard(request):
 @never_cache
 @login_required
 def profile_view(request):
+    if request.user.is_superuser:
+        return HttpResponseForbidden("Admins Are not allowed to access this page.")
+    
     return render(request, "users/profile.html")
 
 #------------------------------ Cases related views -------------------------------
@@ -188,6 +191,12 @@ def profile_view(request):
 @login_required
 def assign_investigators(request):
     user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins Are not allowed to access this page.")
+    
+    if user.profile.role != "SENIOR_OFFICER":
+        return HttpResponseForbidden("Access denied.")
 
     # Fetch only cases assigned to this SO
     cases = Case.objects.filter(
@@ -230,6 +239,14 @@ def assign_investigators(request):
 
 @login_required
 def monitor_progress(request):
+
+    user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins Are not allowed to access this page.")
+    
+    if user.profile.role != "SENIOR_OFFICER":
+        return HttpResponseForbidden("Access denied.")
 
     # Only cases assigned to this SO
     cases = Case.objects.filter(
