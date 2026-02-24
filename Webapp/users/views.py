@@ -1,5 +1,5 @@
 from datetime import date
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -11,6 +11,7 @@ from evidence.models import Evidence
 from cases.models import Case, CaseMember
 from django.contrib.auth.models import User
 from users.models import UserProfile
+from django.contrib.auth import authenticate, login
 
 #------------------------------ Logout View ---------------------------------------
 def logout_view(request):
@@ -47,6 +48,7 @@ def root_redirect(request): # This is used to use root http://127.0.0.1:8000/ no
         return redirect("login")
     
 @never_cache
+
 def login_view(request):
 
     if request.method == "POST":
@@ -54,45 +56,39 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
-
-            # 🔹 Check if profile exists # if admin trys to login in then it deny
-            # if not hasattr(user, "profile"):
-            #     return render(
-            #         request,
-            #         "users/login.html",
-            #         {"error": "No authorized user exists."}
-            #     )
-
             login(request, user)
-            if user.is_superuser:
-                return redirect("/admin/")
 
-            # 🔹 Get role
+            # Redirect based on role
+            if user.is_superuser:
+                return JsonResponse({
+                    "success": True,
+                    "redirect_url": "/admin/"
+                })
+
             role = user.profile.role
 
-            # # 🔹 Redirect based on role
             if role == "SENIOR_OFFICER":
-                return redirect("so_dashboard")
+                return JsonResponse({
+                    "success": True,
+                    "redirect_url": "/dashboard/so/"
+                })
 
             elif role == "INVESTIGATOR":
-                return redirect("investigator_dashboard")
+                return JsonResponse({
+                    "success": True,
+                    "redirect_url": "/dashboard/investigator/"
+                })
 
             elif role == "AUDITOR":
-                return redirect("auditor_dashboard")
+                return JsonResponse({
+                    "success": True,
+                    "redirect_url": "/dashboard/auditor/"
+                })
 
-        else:
-            return render(
-                request,
-                "users/login.html",
-                {"error": "Invalid credentials"}
-            )
+        return JsonResponse({"success": False})
 
     return render(request, "users/login.html")
 
