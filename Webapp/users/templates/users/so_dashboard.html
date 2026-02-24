@@ -197,9 +197,25 @@
         }
         .card:hover .card-index { opacity: 0.1; color: var(--blush); transform: translateY(-20px); }
 
-        footer {
-            margin-top: auto; display: flex; justify-content: space-between;
-            font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted); letter-spacing: 2px;
+        .site-footer {
+            margin-top: auto; /* Pushes footer to bottom of main-container */
+            padding: 30px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 1px;
+        }
+
+        .site-footer .protocol-tag {
+            background: var(--deep);
+            color: var(--blush);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -269,8 +285,10 @@
             </div>
         </section>
 
-        <footer>
-            <div>&copy; 2026 Digital Evidence Tracking & Management System | All Rights Reserved</div>
+        <footer class="site-footer">
+            <div class="footer-left">
+                &copy; 2026 DIGITAL EVIDENCE TRACKING & MANAGEMENT SYSTEM | ALL RIGHTS RESERVED
+            </div>
         </footer>
     </main>
 
