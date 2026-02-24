@@ -12,13 +12,13 @@
 
     <style>
         :root {
-            --deep: #0b132b;    /* Deep Navy */
+            --deep: #000000;    /* Deep Navy */
             --blush: #5bc0be;   /* Tech Cyan */
             --sand: #f1f4f9;    /* Light Steel */
             --muted: #4a5568;   /* Slate Grey */
             --mauve: #9a8c98;   /* Muted Purple */
             --white: #ffffff;
-            --warning: #ffb703; /* Amber */
+            --warning: #f14f4f; /* Amber */
             --success: #38b000; /* Green */
         }
 
@@ -135,6 +135,7 @@
 
         .card {
             flex: 1;
+            /* height: 50%; */
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(15px);
             border-radius: 45px;
@@ -142,7 +143,7 @@
             position: relative;
             overflow: hidden;
             border: 1px solid var(--white);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex; flex-direction: column; cursor: pointer;
             box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
         }
@@ -164,21 +165,22 @@
         }
         .card:hover .icon-box { 
             background: var(--muted); color: var(--blush); 
-            transform: scale(1.1) rotate(-8deg); 
+            transform: scale(1.1) rotate(-8deg);
+            margin-top: 30px; 
         }
 
-        .card h2 {
+        .card h2 {  
             font-family: 'Plus Jakarta Sans', serif; font-size: 1.8rem;
-            margin-top: 30px; transition: all 0.5s ease; white-space: nowrap; color: var(--deep);
+            margin-top: 50%; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); color: var(--deep);
         }
-        .card:hover h2 { font-size: 2.8rem; color: var(--blush); }
+        .card:hover h2 { margin-top: 30px; font-size: 2.8rem; color: var(--blush); }
 
         .card-content {
             opacity: 0; transform: translateY(30px);
             transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
             margin-top: 30px; pointer-events: none; max-width: 420px;
         }
-        .card:hover .card-content { opacity: 1; transform: translateY(0); pointer-events: all; }
+        .card:hover .card-content { margin-top: 30px; opacity: 1; transform: translateY(0); pointer-events: all; }
 
         .btn-premium {
             display: inline-flex; align-items: center; gap: 15px;
@@ -187,7 +189,7 @@
             text-decoration: none; font-weight: 700; font-size: 0.85rem;
             text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
         }
-        .btn-premium:hover { background: var(--warning); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 183, 3, 0.3); }
+        .btn-premium:hover { background: var(--white); transform: translateY(-3px); box-shadow: 0 10px 20px}
 
         .card-index {
             position: absolute; bottom: 40px; right: 40px;
