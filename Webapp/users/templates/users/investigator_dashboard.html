@@ -1,153 +1,274 @@
 {% csrf_token %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IO Dashboard | EvidenceLock</title>
+    <title>IO Portal | EvidenceLock</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --primary: #0284c7;    
-            --secondary: #0ea5e9;  
-            --bg-light: #f8fafc;   
-            --text-dark: #0f172a;  
-            --text-muted: #64748b; 
-            --border: #e2e8f0;     
+            --deep: #0b132b;    /* Deep Navy */
+            --blush: #5bc0be;   /* Tech Cyan */
+            --sand: #f1f4f9;    /* Light Steel */
+            --muted: #4a5568;   /* Slate Grey */
+            --mauve: #9a8c98;   /* Muted Purple */
             --white: #ffffff;
-            --io-accent: #6366f1;
+            --warning: #ffb703; /* Amber */
+            --success: #38b000; /* Green */
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--sand); 
+            color: var(--deep);
+            display: flex; 
+            min-height: 100vh;
+            padding: 30px;
+            overflow: hidden;
+            position: relative;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        /* --- DYNAMIC BACKGROUND ORBS --- */
+        .ambient-orb {
+            position: fixed;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(91, 192, 190, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(80px);
+            animation: orbFloat 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(-10%, -10%); }
+            100% { transform: translate(20%, 15%); }
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+            width: 260px;
+            background: var(--deep);
+            border-radius: 35px;
+            display: flex;
+            flex-direction: column;
+            padding: 35px 22px;
+            margin-right: 30px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(11, 19, 43, 0.2);
+            z-index: 100;
         }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
-        .logo i { color: var(--secondary); font-size: 2.2rem; }
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 8px; }
+
+        .nav-brand {
+            min-width: 40px; height: 40px;
+            background: var(--blush);
+            border-radius: 14px;
+            display: grid; 
+            place-items: center;
+            margin-bottom: 60px;
+        }
+        .nav-brand i { color: var(--deep); }
+
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; width: 100%; }
         .nav-links a {
-            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
-            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+            display: flex; align-items: center;
+            text-decoration: none; color: var(--mauve);
+            transition: 0.3s; white-space: nowrap;
         }
-        .nav-links a.active, .nav-links a:hover { background: rgba(99, 102, 241, 0.1); color: var(--io-accent); }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { 
+            margin-left: 20px; opacity: 1; transition: opacity 0.4s ease 0.1s; 
+            font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
 
-        /* --- MAIN WRAPPER --- */
-        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; }
-        
+        /* --- MAIN CONTAINER --- */
+        .main-container { flex: 1; display: flex; flex-direction: column; z-index: 1; }
+
         header {
-            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
         }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
-        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--io-accent); }
-        .badge-role { background: #eef2ff; color: var(--io-accent); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
-
-        /* --- CONTENT --- */
-        .content { padding: 40px; }
-        .welcome-header { margin-bottom: 40px; }
-        .welcome-header h1 { font-size: 2rem; color: var(--text-dark); font-weight: 800; }
-        .welcome-header p { color: var(--text-muted); font-weight: 500; margin-top: 5px; }
-
-        /* --- DASHBOARD GRID --- */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
+        .header-title h1 {
+            font-family: 'Plus Jakarta Sans', serif; font-size: 3rem; font-weight: 500; color: var(--deep);
         }
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+        }
+
+        /* --- PROFILE BUTTON --- */
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white);
+            padding: 6px 18px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid var(--sand);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
+        }
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
+
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        /* --- ACCORDION CARDS --- */
+        .accordion-wrapper { display: flex; gap: 24px; height: 580px; width: 100%; }
 
         .card {
-            background: var(--white); padding: 35px; border-radius: 24px;
-            border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            transition: 0.3s; display: flex; flex-direction: column;
-        }
-        .card:hover { transform: translateY(-5px); border-color: var(--io-accent); }
-        
-        .card-icon {
-            width: 60px; height: 60px; background: #eef2ff; color: var(--io-accent);
-            border-radius: 16px; display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; margin-bottom: 20px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            border-radius: 45px;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--white);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
         }
 
-        .card h3 { font-size: 1.25rem; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
-        .card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; flex: 1; }
-
-        .btn-action {
-            width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--io-accent);
-            background: transparent; color: var(--io-accent); font-weight: 700; cursor: pointer;
-            text-align: center; text-decoration: none; transition: 0.3s;
+        .card:hover {
+            flex: 3.5;
+            background: var(--deep);
+            color: var(--white);
+            box-shadow: 0 40px 100px rgba(11, 19, 43, 0.3);
         }
-        .btn-action:hover { background: var(--io-accent); color: white; }
 
-        footer { padding: 30px; text-align: center; border-top: 1px solid var(--border); background: var(--white); margin-top: auto; }
+        .icon-box {
+            width: 70px; height: 70px;
+            background: var(--sand);
+            border-radius: 22px;
+            display: grid; place-items: center;
+            font-size: 2rem; color: var(--deep);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card:hover .icon-box { 
+            background: var(--muted); color: var(--blush); 
+            transform: scale(1.1) rotate(-8deg); 
+        }
+
+        .card h2 {
+            font-family: 'Plus Jakarta Sans', serif; font-size: 1.8rem;
+            margin-top: 30px; transition: all 0.5s ease; white-space: nowrap; color: var(--deep);
+        }
+        .card:hover h2 { font-size: 2.8rem; color: var(--blush); }
+
+        .card-content {
+            opacity: 0; transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+            margin-top: 30px; pointer-events: none; max-width: 420px;
+        }
+        .card:hover .card-content { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+        .btn-premium {
+            display: inline-flex; align-items: center; gap: 15px;
+            padding: 18px 38px; background: var(--blush);
+            color: var(--deep); border-radius: 100px;
+            text-decoration: none; font-weight: 700; font-size: 0.85rem;
+            text-transform: uppercase; letter-spacing: 2px; transition: 0.3s;
+        }
+        .btn-premium:hover { background: var(--warning); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 183, 3, 0.3); }
+
+        .card-index {
+            position: absolute; bottom: 40px; right: 40px;
+            font-family: 'Fraunces', serif; font-size: 4rem;
+            font-style: italic; opacity: 0.05; transition: 0.6s; color: var(--mauve);
+        }
+        .card:hover .card-index { opacity: 0.1; color: var(--blush); transform: translateY(-20px); }
+
+        footer {
+            margin-top: auto; display: flex; justify-content: space-between;
+            font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted); letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
-        <ul class="nav-links">
-            <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-            <li><a href="#"><i class='bx bxs-edit-alt'></i> Case Notes</a></li>
-            <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i> Add Evidence</a></li>
-            <li><a href="#"><i class='bx bxs-comment-detail'></i> Observations</a></li>
-            <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
-        </ul>
-    </div>
+    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
+    <div class="ambient-orb" style="bottom: -200px; right: -100px; animation-delay: -5s;"></div>
 
-    <div class="main-wrapper">
+    <aside class="sidebar">
+        <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="#" class="active"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
+            <li><a href="#"><i class='bx bxs-edit-alt'></i><span>Update Details</span></a></li>
+            <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i><span>Upload Evidence</span></a></li>
+            <li><a href="#"><i class='bx bxs-comment-detail'></i><span>Comments</span></a></li>
+            <li><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+    
+    <main class="main-container">
         <header>
-            <span style="font-weight: 700; color: var(--text-muted);">Investigation Portal</span>
-            <div class="user-profile">
-                <span class="badge-role">{{ request.user.profile.role }}</span>
-                <a href="{% url 'profile' %}"><img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=6366f1&color=fff" alt="User"></a>
+            <div class="header-title">
+                <h1>Investigator's Dashboard</h1>
+                <p class="subtitle">DETAMS Protocol · 2026</p>
+            </div>
+            
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
             </div>
         </header>
 
-        <main class="content">
-            <div class="welcome-header">
-                <h1>Workbox: Active Investigations</h1>
-                <p>Logged in as: <b>{{ request.user.first_name }} {{ request.user.last_name }}</b></p>
+        <section class="accordion-wrapper">
+            <div class="card">
+                <div class="icon-box"><i class='bx bxs-book-content'></i></div>
+                <h2>Update Case Notes</h2>
+                <div class="card-content">
+                    <p style="color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 40px;">Document daily findings, technical forensic progress, and specific case-related field details within the secure journal.</p>
+                    <a href="#" class="btn-premium">Update Journal <i class='bx bx-right-arrow-alt'></i></a>
+                </div>
+                <div class="card-index">01</div>
             </div>
 
-            <div class="dashboard-grid">
-                <div class="card">
-                    <div class="card-icon"><i class='bx bxs-book-content'></i></div>
-                    <h3>Update Case Notes</h3>
-                    <p>Document daily findings, investigation progress, and specific case-related technical details.</p>
-                    <a href="#" class="btn-action">Update Journal</a>
+            <div class="card">
+                <div class="icon-box"><i class='bx bxs-cloud-upload'></i></div>
+                <h2>Upload Evidence</h2>
+                <div class="card-content">
+                    <p style="color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 40px;">Securely ingest digital assets and generate immediate SHA-256 cryptographic signatures for the chain of custody.</p>
+                    <a href="{% url 'upload_evidence' %}" class="btn-premium">Upload <i class='bx bx-right-arrow-alt'></i></a>
                 </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class='bx bxs-cloud-upload'></i></div>
-                    <h3>Upload Evidence</h3>
-                    <p>Securely upload digital assets and generate an immediate SHA-256 cryptographic hash signature.</p>
-                    <a href="{% url 'upload_evidence' %}" class="btn-action">Log New Asset</a>
-                </div>
-
-                <div class="card">
-                    <div class="card-icon"><i class='bx bxs-chat'></i></div>
-                    <h3>Add Observations</h3>
-                    <p>Add official comments or specific forensic observations to existing evidence in the registry.</p>
-                    <a href="#" class="btn-action">Add Comments</a>
-                </div>
+                <div class="card-index">02</div>
             </div>
-        </main>
+
+            <div class="card">
+                <div class="icon-box"><i class='bx bxs-chat'></i></div>
+                <h2>Add Comments</h2>
+                <div class="card-content">
+                    <p style="color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 40px;">Add official commentary or provide technical forensic context for existing digital evidence strings in the registry.</p>
+                    <a href="#" class="btn-premium">Add Context <i class='bx bx-right-arrow-alt'></i></a>
+                </div>
+                <div class="card-index">03</div>
+            </div>
+        </section>
 
         <footer>
-            <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
-                &copy; 2026 DETAMS | Field Integrity Level 1
-            </p>
+            <div>&copy; 2026 Digital Evidence Tracking & Management System | All Rights Reserved</div>
         </footer>
-    </div>
+    </main>
 
 </body>
 </html>
