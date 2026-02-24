@@ -1,9 +1,13 @@
+from django.utils import timezone
+import uuid
+
 from django.http import HttpResponseForbidden
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 # Create your views here.
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from cases.models import Case
 from core.hash_service import HashService
 from evidence.models import Evidence
 from .models import CustodyLog
@@ -82,5 +86,38 @@ def integrity_console(request):
         {
             "results": results,
             "evidences": evidences
+        }
+    )
+
+@login_required
+def generate_report(request):
+
+    # Only Auditor
+    if request.user.profile.role != "AUDITOR":
+        return HttpResponseForbidden("Not allowed")
+
+    cases = Case.objects.all().order_by("-created_at")
+
+    selected_case = None
+    evidences = None
+    reference_id = None
+
+    case_id = request.GET.get("case_id")
+
+    if case_id:
+        selected_case = get_object_or_404(Case, id=case_id)
+        evidences = Evidence.objects.filter(case=selected_case)
+
+        reference_id = f"AUD-{timezone.now().year}-{uuid.uuid4().hex[:6].upper()}"
+
+    return render(
+        request,
+        "custody/generate_report.html",
+        {
+            "cases": cases,
+            "selected_case": selected_case,
+            "evidences": evidences,
+            "reference_id": reference_id,
+            "today": timezone.now()
         }
     )

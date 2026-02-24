@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compliance Report | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #059669;    --secondary: #10b981;  
+            --bg-light: #f8fafc;   --text-dark: #0f172a;  
+            --text-muted: #64748b; --border: #e2e8f0;     
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2.2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a.active, .nav-links a:hover { background: rgba(16, 185, 129, 0.1); color: var(--secondary); }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper { margin-left: 280px; flex: 1; padding: 40px; }
+
+        /* Configuration Card */
+        .config-card {
+            background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border);
+            margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .config-group { flex: 1; margin-right: 20px; }
+        .config-group label { display: block; font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; color: var(--text-dark); }
+        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-light); font-weight: 700; outline: none; }
+
+        .btn-export {
+            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;
+        }
+
+        /* --- THE REPORT PAGE PREVIEW --- */
+        .report-preview {
+            background: white; width: 100%; max-width: 850px; margin: 0 auto;
+            padding: 60px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .report-header { text-align: center; border-bottom: 2px solid var(--text-dark); padding-bottom: 20px; margin-bottom: 40px; }
+        .report-header h1 { font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+        .report-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
+
+        .report-section { margin-bottom: 35px; }
+        .section-title { font-size: 0.9rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; color: var(--primary); }
+
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .info-item { font-size: 0.85rem; margin-bottom: 5px; }
+        .info-item b { color: var(--text-dark); }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 10px; background: #f8fafc; font-size: 0.75rem; border: 1px solid var(--border); }
+        td { padding: 10px; font-size: 0.8rem; border: 1px solid var(--border); vertical-align: top; }
+        
+        .hash-text { font-family: monospace; font-size: 0.7rem; color: #475569; }
+
+        .seal-stamp {
+            position: absolute; top: 120px; right: 60px; border: 3px solid var(--primary);
+            color: var(--primary); padding: 10px; border-radius: 8px; font-weight: 900;
+            transform: rotate(15deg); opacity: 0.3; font-size: 1.2rem;
+        }
+        
+
+        /* --- PRINT MEDIA QUERY --- */
+        @media print {
+            .sidebar, .config-card, header { display: none !important; }
+            body { background: white; }
+            .main-wrapper { margin-left: 0; padding: 0; }
+            .report-preview { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'auditor_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i> Chain of Custody</a></li>
+            <li><a href="{% url 'integrity_console' %}"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
+            <li><a href="#" class="active"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="config-card">
+            <div class="config-group">
+                <label>Select Case</label>
+                <form method="GET">
+                    <select name="case_id" onchange="this.form.submit()">
+                        <option value="">Select Case</option>
+
+                        {% for case in cases %}
+                            <option value="{{ case.id }}"
+                                {% if selected_case and case.id == selected_case.id %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ case.case_id }} - {{ case.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <!-- <div class="config-group">
+                <label>Report Type</label>
+                <select>
+                    <option>Full Compliance Audit</option>
+                    <option>Integrity Verification Only</option>
+                    <option>Chain of Custody Summary</option>
+                </select>
+            </div> -->
+            <button class="btn-export" onclick="window.print()">
+                <i class='bx bxs-file-pdf'></i> Export for Court
+            </button>
+        </div>
+
+        <div class="report-preview">
+            <div class="seal-stamp">
+                {% if selected_case.status == "CLOSED" %}
+                    INTEGRITY VERIFIED
+                {% else %}
+                    IN REVIEW
+                {% endif %}
+            </div>
+            
+            <div class="report-header">
+                <h1>Evidence Integrity Report</h1>
+                <p>Digital Forensics & Chain of Custody Compliance Office</p>
+                <p style="font-size: 0.7rem;">Reference ID: {{ reference_id }}</p>
+            </div>
+
+            <div class="report-section">
+                <div class="section-title">Case Metadata</div>
+                <div class="info-grid">
+                    {% if selected_case %}
+
+                    <div class="info-item"><b>Case ID:</b> {{ selected_case.case_id }}</div>
+                    <div class="info-item"><b>Subject:</b> {{ selected_case.title }}</div>
+                    <div class="info-item"><b>Status:</b> {{ selected_case.status }}</div>
+
+                    <div class="info-item"><b>Date Generated:</b> {{ today|date:"M d, Y" }}</div>
+                    <div class="info-item"><b>Senior Officer:</b> {{ selected_case.assigned_so.get_full_name }}</div>
+                    <div class="info-item"><b>Auditor:</b> {{ request.user.get_full_name }}</div>
+
+                    {% endif %}
+                </div>
+            </div>
+
+            
+
+            <div class="report-section">
+                <div class="section-title">Verified Asset Registry</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Name</th>
+                            <th>Origin Hash (SHA-256)</th>
+                            <th>Audit Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% if evidences %}
+                        {% for evidence in evidences %}
+                        <tr>
+                            <td>{{ evidence.file_name }}</td>
+
+                            <td class="hash-text">
+                                {{ evidence.sha256_hash }}
+                            </td>
+
+                            <td>
+                                <b style="color: var(--primary);">✓ VERIFIED</b>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3">No assets found.</td>
+                        </tr>
+                    {% endif %}
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="report-section">
+                <div class="section-title">Compliance Declaration</div>
+                <p style="font-size: 0.8rem; line-height: 1.6; color: var(--text-dark);">
+                    I, the undersigned Auditor, have performed a comprehensive review of the Chain of Custody for Case EL-2026-X49. 
+                    All cryptographic signatures have been verified against the secure registry. No unauthorized access attempts or data 
+                    mismatches were detected. The evidence remains in a pristine, tamper-free state suitable for legal proceedings.
+                </p>
+            </div>
+
+            
+
+            <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
+                <div style="font-size: 0.8rem; border-top: 1px solid var(--text-dark); width: 200px; padding-top: 10px; text-align: center;">
+                    <b>Official Signature</b><br>
+                    Legal Auditor Vance
+                </div>
+                <div style="text-align: right;">
+                    <i class='bx bxs-shield-alt-2' style="font-size: 2.5rem; color: var(--text-dark);"></i>
+                    <p style="font-size: 0.6rem; font-weight: 800;">EVIDENCELOCK SECURE SYSTEM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

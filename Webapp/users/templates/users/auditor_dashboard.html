@@ -98,7 +98,7 @@
             <li><a href="#" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i> Chain of Custody</a></li>
             <li><a href="{% url 'integrity_console' %}"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
-            <li><a href="#"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+            <li><a href="{% url 'generate_report' %}"><i class='bx bxs-file-export'></i> Generate Report</a></li>
             <li style="margin-top: auto;"><a href="{% url 'logout' %}"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
         </ul>
     </div>
@@ -137,7 +137,7 @@
                     <div class="card-icon"><i class='bx bxs-file-pdf'></i></div>
                     <h3>Compliance Reports</h3>
                     <p>Export court-ready integrity verification and compliance reports for legal proceedings and internal audits.</p>
-                    <a href="#" class="btn-action">Generate Report</a>
+                    <a href="{% url 'generate_report' %}" class="btn-action">Generate Report</a>
                 </div>
             </div>
         </main>
