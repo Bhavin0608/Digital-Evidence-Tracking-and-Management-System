@@ -1,0 +1,20 @@
+{% if messages %}
+{% for message in messages %}
+<div>
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+{% for evidence in case.evidences.all %}
+
+<div>
+    <p>{{ evidence.file_name }}</p>
+    <a href="{% url 'evidence_detail' evidence.id %}">
+        View Evidence
+    </a>
+    <a href="{% url 'verify_evidence' evidence.id %}">
+        Verify Integrity
+    </a>
+</div>
+
+{% endfor %}

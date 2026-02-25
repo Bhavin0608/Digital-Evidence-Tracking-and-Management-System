@@ -6,7 +6,19 @@ from django.utils import timezone
 from django.http import HttpResponseForbidden
 from custody.models import CustodyLog
 from core.rbac_service import RBACService
+@login_required
+def case_detail(request, case_id):
 
+    case = get_object_or_404(Case, id=case_id)
+
+    # RBAC check
+    if not RBACService.can_access_case(request.user, case):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("You do not have access to this case.")
+
+    return render(request, "cases/case_detail.html", {
+        "case": case
+    })
 @login_required
 def request_closure(request):
     # Only cases assigned to SO and not already closed
