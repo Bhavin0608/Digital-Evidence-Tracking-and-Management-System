@@ -1,75 +1,184 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Evidence | EvidenceLock</title>
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     <style>
         :root {
-            --primary: #0284c7;    
-            --secondary: #0ea5e9;  
-            --bg-light: #f8fafc;   
-            --text-dark: #0f172a;  
-            --text-muted: #64748b; 
-            --border: #e2e8f0;     
+            --primary: #0284c7;
+            --secondary: #0ea5e9;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
             --white: #ffffff;
-            --integrity: #059669; /* Green for secure hash */
+            --integrity: #059669;
+            /* Green for secure hash */
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            display: flex;
+            min-height: 100vh;
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10;
+            width: 280px;
+            background: var(--text-dark);
+            color: white;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
         }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
-        .logo i { color: var(--secondary); font-size: 2rem; }
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 8px; }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 50px;
+        }
+
+        .logo i {
+            color: var(--secondary);
+            font-size: 2rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            flex: 1;
+        }
+
+        .nav-links li {
+            margin-bottom: 8px;
+        }
+
         .nav-links a {
-            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
-            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: 0.3s;
         }
-        .nav-links a.active { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+
+        .nav-links a.active {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--secondary);
+        }
 
         /* --- MAIN WRAPPER --- */
-        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-        .content-area { flex: 1; padding: 40px; max-width: 1000px; margin: 0 auto; width: 100%; }
-        
-        .page-header { margin-bottom: 35px; }
-        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.8px; }
+        .main-wrapper {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            margin-bottom: 35px;
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.8px;
+        }
 
         header {
-            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white);
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
-        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--io-accent); }
-        .badge-role { background: #eef2ff; color: var(--io-accent); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-profile img {
+            width: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--io-accent);
+        }
+
+        .badge-role {
+            background: #eef2ff;
+            color: var(--io-accent);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
 
         /* --- UPLOAD CARD --- */
         .evidence-card {
             background: var(--white);
             padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
-        .input-group { display: flex; flex-direction: column; margin-bottom: 25px; }
-        label { 
-            font-size: 0.72rem; font-weight: 800; color: var(--text-dark); 
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 25px;
         }
 
-        input, select, textarea {
-            padding: 14px 18px; background: #f8fafc; border: 1px solid var(--border);
-            border-radius: 12px; font-size: 0.95rem; font-weight: 600; outline: none;
+        label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 14px 18px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
         }
 
         /* --- DRAG & DROP AREA --- */
@@ -83,9 +192,23 @@
             transition: 0.3s;
             margin-bottom: 25px;
         }
-        .upload-area:hover { border-color: var(--primary); background: #f0f9ff; }
-        .upload-area i { font-size: 3rem; color: var(--primary); margin-bottom: 15px; }
-        .upload-area p { font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
 
         /* --- HASH DISPLAY --- */
         .hash-container {
@@ -94,22 +217,57 @@
             padding: 15px;
             border-radius: 12px;
             margin-top: 10px;
-            display: none; /* Hidden until file selected */
+            display: none;
+            /* Hidden until file selected */
         }
-        .hash-title { font-size: 0.65rem; font-weight: 800; color: var(--integrity); letter-spacing: 1px; margin-bottom: 5px; }
-        .hash-value { font-family: monospace; font-size: 0.85rem; color: #065f46; word-break: break-all; }
+
+        .hash-title {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--integrity);
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .hash-value {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #065f46;
+            word-break: break-all;
+        }
 
         .btn-submit {
-            width: 100%; padding: 18px; background: var(--primary); color: white; border: none;
-            border-radius: 14px; font-size: 1rem; font-weight: 700; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
         }
-        .btn-submit:hover { background: #0369a1; transform: translateY(-2px); }
+
+        .btn-submit:hover {
+            background: #0369a1;
+            transform: translateY(-2px);
+        }
 
         /* --- FOOTER --- */
-        .site-footer { padding: 25px; background: var(--white); text-align: center; border-top: 1px solid var(--border); }
+        .site-footer {
+            padding: 25px;
+            background: var(--white);
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
     </style>
 </head>
+
 <body>
 
     <div class="sidebar">
@@ -128,13 +286,16 @@
             <span style="font-weight: 700; color: var(--text-muted);">Field Investigation Portal</span>
             <div class="user-profile">
                 <span class="badge-role">{{ request.user.profile.role }}</span>
-                <a href="{% url 'profile' %}"><img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=6366f1&color=fff" alt="User"></a>
+                <a href="{% url 'profile' %}"><img
+                        src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=6366f1&color=fff"
+                        alt="User"></a>
             </div>
         </header>
         <main class="content-area">
             <div class="page-header">
                 <h2>Log Digital Evidence</h2>
-                <p>Select a case and upload the evidence file. The system will auto-generate a cryptographic signature for integrity.</p>
+                <p>Select a case and upload the evidence file. The system will auto-generate a cryptographic signature
+                    for integrity.</p>
             </div>
 
             <div class="evidence-card">
@@ -145,9 +306,9 @@
                         <select id="caseSelect" name="case_id" required>
                             <option value="" disabled selected>Select active case file...</option>
                             {% for case in cases %}
-                                <option value="{{ case.id }}">
-                                    {{ case.case_id }} - {{ case.title }}
-                                </option>
+                            <option value="{{ case.id }}">
+                                {{ case.case_id }} - {{ case.title }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -176,7 +337,8 @@
                     </div>
 
                     <div class="hash-container" id="hashContainer">
-                        <div class="hash-title"><i class='bx bxs-check-shield'></i> SHA-256 INTEGRITY SIGNATURE GENERATED</div>
+                        <div class="hash-title"><i class='bx bxs-check-shield'></i> SHA-256 INTEGRITY SIGNATURE
+                            GENERATED</div>
                         <div class="hash-value" id="hashDisplay">Calculating signature...</div>
                     </div>
 
@@ -203,13 +365,13 @@
         const hashDisplay = document.getElementById('hashDisplay');
         const fileStatus = document.getElementById('fileStatus');
 
-        fileInput.addEventListener('change', async function(e) {
+        fileInput.addEventListener('change', async function (e) {
             const file = e.target.files[0];
             if (file) {
-                fileStatus.innerText = `Selected: ${file.name} (${(file.size/1024).toFixed(2)} KB)`;
+                fileStatus.innerText = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
                 hashContainer.style.display = 'block';
                 hashDisplay.innerText = "Generating SHA-256 Hash...";
-                
+
                 // Real-time Hashing Logic
                 const hash = await generateSHA256(file);
                 hashDisplay.innerText = hash;
@@ -224,9 +386,7 @@
             return hashHex;
         }
 
-        document.getElementById('evidenceForm').addEventListener('submit', function(e) {
-            alert("Evidence successfully hashed and logged. Digital signature stored in immutable registry.");
-        });
     </script>
 </body>
+
 </html>

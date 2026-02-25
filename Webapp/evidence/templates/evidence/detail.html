@@ -1,0 +1,9 @@
+<h2>{{ evidence.file_name }}</h2>
+
+<p>Uploaded by: {{ evidence.uploaded_by.username }}</p>
+<p>File size: {{ evidence.file_size }} bytes</p>
+<p>Hash: {{ evidence.sha256_hash }}</p>
+
+<a href="{% url 'preview_evidence' evidence.id %}">Preview File</a>
+<br>
+<a href="{% url 'download_evidence' evidence.id %}">Download File</a>
