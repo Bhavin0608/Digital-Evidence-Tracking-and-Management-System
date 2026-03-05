@@ -17,6 +17,12 @@ class Evidence(models.Model):
 
     file_name = models.CharField(max_length=255)
 
+    description = models.TextField(
+        blank=True,
+        default="",
+        help_text="Brief description of the evidence"
+    )
+
     file_type = models.CharField(max_length=100)
 
     file_size = models.BigIntegerField()

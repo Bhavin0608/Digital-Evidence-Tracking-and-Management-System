@@ -1,363 +1,268 @@
+﻿{% csrf_token %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log Evidence | EvidenceLock</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --primary: #0284c7;
-            --secondary: #0ea5e9;
-            --bg-light: #f8fafc;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --deep: #000000;
+            --blush: #5bc0be;
+            --sand: #f1f4f9;
+            --muted: #4a5568;
+            --mauve: #9a8c98;
             --white: #ffffff;
-            --integrity: #059669;
-            /* Green for secure hash */
+            --warning: #f14f4f;
+            --success: #38b000;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Manrope', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            display: flex;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--sand); 
+            color: var(--deep);
+            display: flex; 
             min-height: 100vh;
+            padding: 30px;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        .ambient-orb {
+            position: fixed;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(91, 192, 190, 0.08) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; filter: blur(100px);
         }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px;
-            background: var(--text-dark);
-            color: white;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
             position: fixed;
-            height: 100vh;
-            z-index: 10;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 50px;
-        }
-
-        .logo i {
-            color: var(--secondary);
-            font-size: 2rem;
-        }
-
-        .nav-links {
-            list-style: none;
-            flex: 1;
-        }
-
-        .nav-links li {
-            margin-bottom: 8px;
-        }
-
-        .nav-links a {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: #94a3b8;
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .nav-links a.active {
-            background: rgba(14, 165, 233, 0.1);
-            color: var(--secondary);
-        }
-
-        /* --- MAIN WRAPPER --- */
-        .main-wrapper {
-            margin-left: 280px;
-            flex: 1;
+            top: 30px;
+            left: 30px;
+            width: 260px;
+            height: calc(100vh - 60px);
+            z-index: 1000;
+            background: var(--deep);
+            border-radius: 35px;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            padding: 35px 22px;
         }
+        .nav-brand { min-width: 40px; height: 40px; background: var(--blush); border-radius: 14px; display: grid; place-items: center; margin-bottom: 60px; }
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; }
+        .nav-links a { display: flex; align-items: center; text-decoration: none; color: var(--mauve); transition: 0.3s; }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { margin-left: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
 
-        .content-area {
+        /* --- MAIN CONTAINER --- */
+        .main-container {
             flex: 1;
-            padding: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .page-header {
-            margin-bottom: 35px;
-        }
-
-        .page-header h2 {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            letter-spacing: -0.8px;
+            margin-left: 290px;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
+        }
+        .header-title h1 {
+            font-family: 'Plus Jakarta Sans', serif; font-size: 2.6rem; color: var(--deep);
+        }
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.62rem;
+            letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+        }
+
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
             background: var(--white);
-            padding: 20px 40px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-profile img {
-            width: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--io-accent);
-        }
-
-        .badge-role {
-            background: #eef2ff;
-            color: var(--io-accent);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 800;
-        }
-
-        /* --- UPLOAD CARD --- */
-        .evidence-card {
-            background: var(--white);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 25px;
-        }
-
-        label {
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        input,
-        select,
-        textarea {
-            padding: 14px 18px;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            outline: none;
-        }
-
-        /* --- DRAG & DROP AREA --- */
-        .upload-area {
-            border: 2px dashed var(--border);
-            padding: 40px;
-            border-radius: 16px;
-            text-align: center;
-            background: #fcfdfe;
+            padding: 6px 18px 6px 6px;
+            border-radius: 50px;
+            border: 1px solid var(--sand);
             cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 25px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
+        }
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
+
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        /* --- GLASS CARD --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 45px; padding: 50px;
+            position: relative; box-shadow: 0 15px 35px rgba(11, 19, 43, 0.04);
+        }
+        .glass-card::after {
+            content: 'SECURE'; position: absolute; right: 30px; bottom: -10px;
+            font-family: 'Fraunces'; font-style: italic; font-size: 7rem; opacity: 0.03; pointer-events: none;
         }
 
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: #f0f9ff;
+        /* --- FORM ELEMENTS --- */
+        .input-group { margin-bottom: 28px; }
+        .input-group label {
+            display: block; font-family: 'JetBrains Mono'; font-size: 0.7rem; font-weight: 600;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
         }
 
-        .upload-area i {
-            font-size: 3rem;
-            color: var(--primary);
-            margin-bottom: 15px;
+        .form-control {
+            width: 100%; padding: 18px 22px; background: var(--white);
+            border: 1px solid rgba(0,0,0,0.05); border-radius: 18px;
+            font-family: 'Plus Jakarta Sans'; font-size: 0.95rem; font-weight: 600;
+            color: var(--deep); outline: none; transition: 0.3s;
         }
+        .form-control:focus { border-color: var(--blush); box-shadow: 0 0 0 4px rgba(91, 192, 190, 0.1); }
 
-        .upload-area p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 600;
+        select.form-control { appearance: none; cursor: pointer; padding-right: 50px; }
+
+        textarea.form-control { min-height: 100px; resize: none; line-height: 1.6; }
+
+        /* --- UPLOAD AREA --- */
+        .upload-area {
+            border: 2px dashed rgba(91, 192, 190, 0.4); padding: 50px;
+            border-radius: 25px; text-align: center;
+            background: rgba(91, 192, 190, 0.03);
+            cursor: pointer; transition: 0.3s; margin-bottom: 28px;
         }
+        .upload-area:hover { border-color: var(--blush); background: rgba(91, 192, 190, 0.06); }
+        .upload-area i { font-size: 3rem; color: var(--blush); margin-bottom: 15px; }
+        .upload-area p { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 
         /* --- HASH DISPLAY --- */
         .hash-container {
-            background: #f0fdf4;
-            border: 1px solid #dcfce7;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 10px;
+            background: rgba(56, 176, 0, 0.06); border: 1px solid rgba(56, 176, 0, 0.15);
+            padding: 18px 22px; border-radius: 18px; margin-bottom: 28px;
             display: none;
-            /* Hidden until file selected */
         }
-
         .hash-title {
-            font-size: 0.65rem;
-            font-weight: 800;
-            color: var(--integrity);
-            letter-spacing: 1px;
-            margin-bottom: 5px;
+            font-family: 'JetBrains Mono'; font-size: 0.65rem; font-weight: 600;
+            color: var(--success); letter-spacing: 1.5px; margin-bottom: 8px; text-transform: uppercase;
         }
-
         .hash-value {
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #065f46;
-            word-break: break-all;
+            font-family: 'JetBrains Mono'; font-size: 0.82rem;
+            color: var(--deep); word-break: break-all; line-height: 1.5;
         }
 
-        .btn-submit {
-            width: 100%;
-            padding: 18px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: 0.3s;
+        /* --- SUBMIT BUTTON --- */
+        .btn-deploy {
+            width: 100%; border: none; padding: 22px;
+            background: var(--blush); color: var(--deep);
+            border-radius: 20px; cursor: pointer;
+            font-family: 'Plus Jakarta Sans'; font-weight: 800; font-size: 0.9rem;
+            text-transform: uppercase; letter-spacing: 2px;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        .btn-deploy:hover {
+            background: var(--deep); color: var(--blush);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .btn-submit:hover {
-            background: #0369a1;
-            transform: translateY(-2px);
-        }
-
-        /* --- FOOTER --- */
-        .site-footer {
-            padding: 25px;
-            background: var(--white);
-            text-align: center;
-            border-top: 1px solid var(--border);
+        footer {
+            margin-top: auto; padding: 30px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; color: var(--muted); text-align: center; letter-spacing: 1px;
         }
     </style>
 </head>
-
 <body>
 
-    <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>DETAMS</span></div>
-        <ul class="nav-links">
-            <li><a href="{% url 'investigator_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-            <li><a href="#"><i class='bx bxs-edit-alt'></i> Case Notes</a></li>
-            <li><a href="#" class="active"><i class='bx bxs-file-plus'></i> Add Evidence</a></li>
-            <li><a href="#"><i class='bx bxs-comment-detail'></i> Observations</a></li>
-            <!-- <li style="margin-top: auto;"><a href="../index.html"><i class='bx bxs-log-out-circle'></i> Logout</a></li> -->
-        </ul>
-    </div>
+    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
+    <div class="ambient-orb" style="bottom: -200px; right: -100px;"></div>
 
-    <div class="main-wrapper">
+    <aside class="sidebar">
+        <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'investigator_dashboard' %}"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'update_case_notes' %}"><i class='bx bxs-edit-alt'></i><span>Update Details</span></a></li>
+            <li><a href="{% url 'upload_evidence' %}" class="active"><i class='bx bxs-file-plus'></i><span>Upload Evidence</span></a></li>
+            <li><a href="{% url 'observations' %}"><i class='bx bxs-comment-detail'></i><span>Observations</span></a></li>
+            <li><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-container">
         <header>
-            <span style="font-weight: 700; color: var(--text-muted);">Field Investigation Portal</span>
-            <div class="user-profile">
-                <span class="badge-role">{{ request.user.profile.role }}</span>
-                <a href="{% url 'profile' %}"><img
-                        src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=6366f1&color=fff"
-                        alt="User"></a>
+            <div class="header-title">
+                <h1>Log Digital Evidence</h1>
+                <p class="subtitle">DETAMS Protocol &middot; 2026</p>
+            </div>
+
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
             </div>
         </header>
-        <main class="content-area">
-            <div class="page-header">
-                <h2>Log Digital Evidence</h2>
-                <p>Select a case and upload the evidence file. The system will auto-generate a cryptographic signature
-                    for integrity.</p>
-            </div>
 
-            <div class="evidence-card">
-                <form id="evidenceForm" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <label>Associate with Case</label>
-                        <select id="caseSelect" name="case_id" required>
+        <div class="glass-card">
+            <form id="evidenceForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="input-group">
+                    <label>Associate with Case</label>
+                    <div style="position: relative;">
+                        <select id="caseSelect" name="case_id" class="form-control" required>
                             <option value="" disabled selected>Select active case file...</option>
                             {% for case in cases %}
-                            <option value="{{ case.id }}">
-                                {{ case.case_id }} - {{ case.title }}
-                            </option>
+                            <option value="{{ case.id }}">{{ case.case_id }} &mdash; {{ case.title }}</option>
                             {% endfor %}
                         </select>
+                        <i class='bx bx-chevron-down' style="position: absolute; right: 22px; top: 20px; color: var(--blush); font-size: 1.2rem;"></i>
                     </div>
+                </div>
 
-                    <div class="input-group">
-                        <label>Evidence Description</label>
-                        <input type="text" id="evidenceName" placeholder="e.g., Server Access Log - Jan 03" required>
-                    </div>
+                <div class="input-group">
+                    <label>Evidence Description</label>
+                    <textarea name="description" class="form-control" placeholder="Briefly describe the evidence being submitted..."></textarea>
+                </div>
 
-                    <div class="input-group">
-                        <label>Evidence Type</label>
-                        <select required>
-                            <option>Document (PDF/TXT)</option>
-                            <option>Image (JPG/PNG)</option>
-                            <option>Video (MP4/MOV)</option>
-                            <option>System Log / Database Export</option>
-                            <option>Audio Recording</option>
-                        </select>
-                    </div>
-
+                <div class="input-group">
                     <label>Digital Asset (Evidence File)</label>
                     <div class="upload-area" onclick="document.getElementById('fileInput').click()">
                         <i class='bx bx-cloud-upload'></i>
                         <p id="fileStatus">Click to browse or drag and drop forensic data</p>
                         <input type="file" id="fileInput" name="file" hidden required>
                     </div>
+                </div>
 
-                    <div class="hash-container" id="hashContainer">
-                        <div class="hash-title"><i class='bx bxs-check-shield'></i> SHA-256 INTEGRITY SIGNATURE
-                            GENERATED</div>
-                        <div class="hash-value" id="hashDisplay">Calculating signature...</div>
-                    </div>
+                <div class="hash-container" id="hashContainer">
+                    <div class="hash-title"><i class='bx bxs-check-shield'></i> SHA-256 Integrity Signature Generated</div>
+                    <div class="hash-value" id="hashDisplay">Calculating signature...</div>
+                </div>
 
-                    <div class="input-group" style="margin-top: 25px;">
-                        <label>Collector Remarks</label>
-                        <textarea rows="3" placeholder="Notes on collection method or location..."></textarea>
-                    </div>
+                <button type="submit" class="btn-deploy">
+                    Securely Log Evidence <i class='bx bx-lock-alt'></i>
+                </button>
+            </form>
+        </div>
 
-                    <button type="submit" class="btn-submit">
-                        Securely Log Evidence <i class='bx bx-lock-alt'></i>
-                    </button>
-                </form>
-            </div>
-        </main>
-
-        <footer class="site-footer">
-            <p class="copyright">&copy; 2026 DETAMS | Digital Tracking System. All Rights Reserved.</p>
+        <footer>
+            &copy; 2026 DIGITAL EVIDENCE TRACKING & MANAGEMENT SYSTEM | ALL RIGHTS RESERVED
         </footer>
-    </div>
+    </main>
 
     <script>
         const fileInput = document.getElementById('fileInput');
@@ -368,11 +273,9 @@
         fileInput.addEventListener('change', async function (e) {
             const file = e.target.files[0];
             if (file) {
-                fileStatus.innerText = `Selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+                fileStatus.innerText = 'Selected: ' + file.name + ' (' + (file.size / 1024).toFixed(2) + ' KB)';
                 hashContainer.style.display = 'block';
                 hashDisplay.innerText = "Generating SHA-256 Hash...";
-
-                // Real-time Hashing Logic
                 const hash = await generateSHA256(file);
                 hashDisplay.innerText = hash;
             }
@@ -385,8 +288,6 @@
             const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             return hashHex;
         }
-
     </script>
 </body>
-
 </html>

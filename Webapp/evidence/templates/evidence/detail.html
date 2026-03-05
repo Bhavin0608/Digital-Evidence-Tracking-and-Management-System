@@ -1,9 +1,220 @@
-<h2>{{ evidence.file_name }}</h2>
+﻿{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ evidence.file_name }} | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
-<p>Uploaded by: {{ evidence.uploaded_by.username }}</p>
-<p>File size: {{ evidence.file_size }} bytes</p>
-<p>Hash: {{ evidence.sha256_hash }}</p>
+    <style>
+        :root {
+            --deep: #000000;
+            --blush: #5bc0be;
+            --sand: #f1f4f9;
+            --muted: #4a5568;
+            --mauve: #9a8c98;
+            --white: #ffffff;
+            --warning: #f14f4f;
+            --success: #38b000;
+        }
 
-<a href="{% url 'preview_evidence' evidence.id %}">Preview File</a>
-<br>
-<a href="{% url 'download_evidence' evidence.id %}">Download File</a>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--sand); 
+            color: var(--deep);
+            display: flex; min-height: 100vh; padding: 30px;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        .ambient-orb {
+            position: fixed; width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(91, 192, 190, 0.08) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; filter: blur(100px);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; top: 30px; left: 30px;
+            width: 260px; height: calc(100vh - 60px); z-index: 1000;
+            background: var(--deep); border-radius: 35px;
+            display: flex; flex-direction: column; padding: 35px 22px;
+        }
+        .nav-brand { min-width: 40px; height: 40px; background: var(--blush); border-radius: 14px; display: grid; place-items: center; margin-bottom: 60px; }
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; }
+        .nav-links a { display: flex; align-items: center; text-decoration: none; color: var(--mauve); transition: 0.3s; }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { margin-left: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
+
+        /* --- MAIN CONTAINER --- */
+        .main-container { flex: 1; margin-left: 290px; display: flex; flex-direction: column; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
+        }
+        .header-title h1 { font-family: 'Plus Jakarta Sans', serif; font-size: 2.4rem; color: var(--deep); }
+        .subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white); padding: 6px 18px 6px 6px;
+            border-radius: 50px; border: 1px solid var(--sand); cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
+        }
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        /* --- GLASS CARD --- */
+        .glass-card {
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 45px; padding: 50px;
+            position: relative; box-shadow: 0 15px 35px rgba(11,19,43,0.04);
+            max-width: 800px;
+        }
+        .glass-card::after {
+            content: 'ASSET'; position: absolute; right: 30px; bottom: -10px;
+            font-family: 'Fraunces'; font-style: italic; font-size: 7rem; opacity: 0.03; pointer-events: none;
+        }
+
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+
+        .detail-item { }
+        .detail-label {
+            font-family: 'JetBrains Mono'; font-size: 0.68rem; font-weight: 600;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
+        }
+        .detail-value { font-size: 1rem; font-weight: 700; color: var(--deep); }
+
+        .hash-block {
+            background: rgba(0,0,0,0.03); padding: 18px 22px; border-radius: 18px;
+            margin-bottom: 35px;
+        }
+        .hash-label {
+            font-family: 'JetBrains Mono'; font-size: 0.65rem; font-weight: 600;
+            color: var(--success); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;
+        }
+        .hash-value {
+            font-family: 'JetBrains Mono'; font-size: 0.82rem; color: var(--deep);
+            word-break: break-all; line-height: 1.6;
+        }
+
+        .action-row { display: flex; gap: 15px; }
+        .btn-action {
+            flex: 1; padding: 20px; border-radius: 18px; text-decoration: none;
+            font-weight: 700; font-size: 0.85rem; text-align: center;
+            font-family: 'Plus Jakarta Sans'; text-transform: uppercase; letter-spacing: 1.5px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-preview { background: var(--blush); color: var(--deep); }
+        .btn-preview:hover { background: var(--deep); color: var(--blush); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .btn-download { background: rgba(0,0,0,0.05); color: var(--deep); }
+        .btn-download:hover { background: var(--deep); color: var(--white); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+
+        footer {
+            margin-top: auto; padding: 30px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; color: var(--muted); text-align: center; letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
+    <div class="ambient-orb" style="bottom: -200px; right: -100px;"></div>
+
+    <aside class="sidebar">
+        <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'investigator_dashboard' %}"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'update_case_notes' %}"><i class='bx bxs-edit-alt'></i><span>Update Details</span></a></li>
+            <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i><span>Upload Evidence</span></a></li>
+            <li><a href="{% url 'observations' %}"><i class='bx bxs-comment-detail'></i><span>Observations</span></a></li>
+            <li><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-container">
+        <header>
+            <div class="header-title">
+                <h1>{{ evidence.file_name }}</h1>
+                <p class="subtitle">Evidence Asset &middot; {{ evidence.case.case_id }}</p>
+            </div>
+
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
+            </div>
+        </header>
+
+        <div class="glass-card">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">File Name</div>
+                    <div class="detail-value">{{ evidence.file_name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">File Type</div>
+                    <div class="detail-value">{{ evidence.file_type }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">File Size</div>
+                    <div class="detail-value">{{ evidence.file_size|filesizeformat }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Uploaded By</div>
+                    <div class="detail-value">{{ evidence.uploaded_by.get_full_name|default:evidence.uploaded_by.username }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Upload Date</div>
+                    <div class="detail-value">{{ evidence.uploaded_at|date:"M d, Y - h:i A" }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Linked Case</div>
+                    <div class="detail-value">{{ evidence.case.case_id }}</div>
+                </div>
+            </div>
+
+            <div class="hash-block">
+                <div class="hash-label"><i class='bx bxs-check-shield'></i> SHA-256 Integrity Signature</div>
+                <div class="hash-value">{{ evidence.sha256_hash }}</div>
+            </div>
+
+            <div class="action-row">
+                <a href="{% url 'preview_evidence' evidence.id %}" class="btn-action btn-preview" target="_blank">
+                    <i class='bx bx-show'></i> Preview File
+                </a>
+                <a href="{% url 'download_evidence' evidence.id %}" class="btn-action btn-download">
+                    <i class='bx bx-download'></i> Download File
+                </a>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2026 DIGITAL EVIDENCE TRACKING & MANAGEMENT SYSTEM | ALL RIGHTS RESERVED
+        </footer>
+    </main>
+
+</body>
+</html>

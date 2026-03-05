@@ -1,20 +1,262 @@
-{% if messages %}
-{% for message in messages %}
-<div>
-    {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% for evidence in case.evidences.all %}
+﻿{% csrf_token %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Detail | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
-<div>
-    <p>{{ evidence.file_name }}</p>
-    <a href="{% url 'evidence_detail' evidence.id %}">
-        View Evidence
-    </a>
-    <a href="{% url 'verify_evidence' evidence.id %}">
-        Verify Integrity
-    </a>
-</div>
+    <style>
+        :root {
+            --deep: #000000;
+            --blush: #5bc0be;
+            --sand: #f1f4f9;
+            --muted: #4a5568;
+            --mauve: #9a8c98;
+            --white: #ffffff;
+            --warning: #f14f4f;
+            --success: #38b000;
+        }
 
-{% endfor %}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--sand); 
+            color: var(--deep);
+            display: flex; min-height: 100vh; padding: 30px;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        .ambient-orb {
+            position: fixed; width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(91, 192, 190, 0.08) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; filter: blur(100px);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; top: 30px; left: 30px;
+            width: 260px; height: calc(100vh - 60px); z-index: 1000;
+            background: var(--deep); border-radius: 35px;
+            display: flex; flex-direction: column; padding: 35px 22px;
+        }
+        .nav-brand { min-width: 40px; height: 40px; background: var(--blush); border-radius: 14px; display: grid; place-items: center; margin-bottom: 60px; }
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; }
+        .nav-links a { display: flex; align-items: center; text-decoration: none; color: var(--mauve); transition: 0.3s; }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { margin-left: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
+
+        /* --- MAIN CONTAINER --- */
+        .main-container { flex: 1; margin-left: 290px; display: flex; flex-direction: column; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
+        }
+        .header-title h1 { font-family: 'Plus Jakarta Sans', serif; font-size: 2.6rem; color: var(--deep); }
+        .subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white); padding: 6px 18px 6px 6px;
+            border-radius: 50px; border: 1px solid var(--sand); cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
+        }
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
+
+        /* --- MESSAGES --- */
+        .alert-msg {
+            padding: 14px 20px; border-radius: 16px; font-size: 0.82rem; font-weight: 600;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .alert-msg.success { background: rgba(56,176,0,0.08); border: 1px solid rgba(56,176,0,0.2); color: #166534; }
+        .alert-msg.error { background: rgba(241,79,79,0.08); border: 1px solid rgba(241,79,79,0.2); color: #991b1b; }
+
+        /* --- CASE INFO CARD --- */
+        .glass-card {
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 35px; padding: 40px;
+            box-shadow: 0 15px 35px rgba(11,19,43,0.04); margin-bottom: 30px;
+            position: relative;
+        }
+        .glass-card::after {
+            content: 'VAULT'; position: absolute; right: 30px; bottom: -10px;
+            font-family: 'Fraunces'; font-style: italic; font-size: 6rem; opacity: 0.03; pointer-events: none;
+        }
+
+        .case-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .meta-item { }
+        .meta-label { font-family: 'JetBrains Mono'; font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+        .meta-value { font-size: 0.95rem; font-weight: 700; color: var(--deep); }
+
+        .case-description {
+            background: rgba(0,0,0,0.02); padding: 20px 25px; border-radius: 18px;
+            font-size: 0.88rem; line-height: 1.7; color: var(--muted);
+        }
+
+        /* --- EVIDENCE GRID --- */
+        .section-label {
+            font-family: 'JetBrains Mono'; font-size: 0.72rem; font-weight: 600;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 20px; padding-left: 5px;
+        }
+
+        .evidence-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+
+        .evidence-card {
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 25px; padding: 28px;
+            box-shadow: 0 10px 25px rgba(11,19,43,0.04);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .evidence-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(11,19,43,0.08); }
+
+        .ev-name { font-size: 0.95rem; font-weight: 800; color: var(--deep); margin-bottom: 12px; }
+        .ev-hash {
+            font-family: 'JetBrains Mono'; font-size: 0.62rem; color: var(--mauve);
+            word-break: break-all; line-height: 1.5; margin-bottom: 18px;
+            background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 10px;
+        }
+
+        .ev-actions { display: flex; gap: 10px; }
+        .ev-btn {
+            flex: 1; padding: 12px; border-radius: 14px; text-decoration: none;
+            font-weight: 700; font-size: 0.78rem; text-align: center;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .ev-btn-view { background: rgba(91,192,190,0.1); color: var(--blush); }
+        .ev-btn-view:hover { background: var(--blush); color: var(--deep); }
+        .ev-btn-verify { background: rgba(0,0,0,0.04); color: var(--muted); }
+        .ev-btn-verify:hover { background: var(--deep); color: var(--blush); }
+
+        .empty-glass {
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 30px; padding: 60px;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: auto; padding: 30px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; color: var(--muted); text-align: center; letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
+    <div class="ambient-orb" style="bottom: -200px; right: -100px;"></div>
+
+    <aside class="sidebar">
+        <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'so_dashboard' %}"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'assign_investigators' %}"><i class='bx bx-paper-plane'></i><span>Deploy Team</span></a></li>
+            <li><a href="{% url 'monitor_progress' %}" class="active"><i class='bx bx-scan'></i><span>Case Insight</span></a></li>
+            <li><a href="{% url 'request_closure' %}"><i class='bx bx-shield-quarter'></i><span>Closure</span></a></li>
+            <li><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-container">
+        <header>
+            <div class="header-title">
+                <h1>Case Vault</h1>
+                <p class="subtitle">{{ case.case_id }} &middot; Evidence Registry</p>
+            </div>
+
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }} {{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
+            </div>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert-msg {% if message.tags %}{{ message.tags }}{% endif %}">
+                <i class='bx {% if message.tags == "success" %}bxs-check-circle{% else %}bxs-error-alt{% endif %}'></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- ===== CASE INFO ===== -->
+        <div class="glass-card">
+            <div class="case-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Case Title</div>
+                    <div class="meta-value">{{ case.title }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Case ID</div>
+                    <div class="meta-value">{{ case.case_id }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Status</div>
+                    <div class="meta-value">{{ case.get_status_display }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Category</div>
+                    <div class="meta-value">{{ case.get_category_display }}</div>
+                </div>
+            </div>
+            {% if case.description %}
+            <div class="case-description">{{ case.description }}</div>
+            {% endif %}
+        </div>
+
+        <!-- ===== EVIDENCE REGISTRY ===== -->
+        <div class="section-label">Evidence Registry ({{ case.evidences.count }})</div>
+
+        {% if case.evidences.all %}
+        <div class="evidence-grid">
+            {% for evidence in case.evidences.all %}
+            <div class="evidence-card">
+                <div class="ev-name">{{ evidence.file_name }}</div>
+                <div class="ev-hash">SHA-256: {{ evidence.sha256_hash }}</div>
+                <div class="ev-actions">
+                    <a href="{% url 'evidence_detail' evidence.id %}" class="ev-btn ev-btn-view">
+                        <i class='bx bx-show'></i> View
+                    </a>
+                    <a href="{% url 'verify_evidence' evidence.id %}" class="ev-btn ev-btn-verify">
+                        <i class='bx bx-check-shield'></i> Verify
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-glass">
+            <i class='bx bx-data' style="font-size: 3rem; color: var(--blush); margin-bottom: 15px;"></i>
+            <p style="color: var(--muted); font-weight: 600;">No evidence assets linked to this case.</p>
+        </div>
+        {% endif %}
+
+        <footer>
+            &copy; 2026 DIGITAL EVIDENCE TRACKING & MANAGEMENT SYSTEM | ALL RIGHTS RESERVED
+        </footer>
+    </main>
+
+</body>
+</html>

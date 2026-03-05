@@ -1,177 +1,273 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compliance Report | EvidenceLock</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/e33d05f5ac.js" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --primary: #059669;    --secondary: #10b981;  
-            --bg-light: #f8fafc;   --text-dark: #0f172a;  
-            --text-muted: #64748b; --border: #e2e8f0;     
-            --white: #ffffff;      --danger: #ef4444;
+            --deep: #000000;
+            --blush: #5bc0be;
+            --sand: #f1f4f9;
+            --muted: #4a5568;
+            --mauve: #9a8c98;
+            --white: #ffffff;
             --warning: #f59e0b;
+            --success: #38b000;
+            --danger: #dc2626;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
-        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--sand); color: var(--deep);
+            display: flex; min-height: 100vh; padding: 30px;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+        }
+
+        .ambient-orb {
+            position: fixed; width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(91, 192, 190, 0.08) 0%, transparent 70%);
+            border-radius: 50%; z-index: -1; filter: blur(100px);
+        }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
-            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100;
+            position: fixed; top: 30px; left: 30px;
+            width: 260px; height: calc(100vh - 60px); z-index: 1000;
+            background: var(--deep); border-radius: 35px;
+            display: flex; flex-direction: column; padding: 35px 22px;
         }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
-        .logo i { color: var(--secondary); font-size: 2.2rem; }
-        .nav-links { list-style: none; flex: 1; }
-        .nav-links li { margin-bottom: 8px; }
-        .nav-links a {
-            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
-            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        .nav-brand { min-width: 40px; height: 40px; background: var(--blush); border-radius: 14px; display: grid; place-items: center; margin-bottom: 60px; }
+        .nav-links { list-style: none; width: 100%; }
+        .nav-links li { margin-bottom: 35px; }
+        .nav-links a { display: flex; align-items: center; text-decoration: none; color: var(--mauve); transition: 0.3s; }
+        .nav-links a i { font-size: 1.6rem; min-width: 40px; text-align: center; }
+        .nav-links a span { margin-left: 20px; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 2px; }
+        .nav-links a:hover, .nav-links a.active { color: var(--blush); }
+
+        /* --- MAIN --- */
+        .main-container { flex: 1; margin-left: 290px; display: flex; flex-direction: column; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 40px; padding: 0 10px;
         }
-        .nav-links a.active, .nav-links a:hover { background: rgba(16, 185, 129, 0.1); color: var(--secondary); }
+        .header-title h1 { font-family: 'Plus Jakarta Sans', serif; font-size: 2.6rem; color: var(--deep); }
+        .subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
 
-        /* --- MAIN WRAPPER --- */
-        .main-wrapper { margin-left: 280px; flex: 1; padding: 40px; }
-
-        /* Configuration Card */
-        .config-card {
-            background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border);
-            margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        .profile-trigger {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--white); padding: 6px 18px 6px 6px;
+            border-radius: 50px; border: 1px solid var(--sand); cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(11, 19, 43, 0.05);
         }
-        .config-group { flex: 1; margin-right: 20px; }
-        .config-group label { display: block; font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; color: var(--text-dark); }
-        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-light); font-weight: 700; outline: none; }
-
-        .btn-export {
-            background: var(--primary); color: white; border: none; padding: 12px 25px;
-            border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;
-            text-decoration: none; font-size: 0.9rem;
+        .profile-trigger:hover { background: var(--deep); color: var(--white); border-color: var(--deep); }
+        .avatar-hub { position: relative; width: 38px; height: 38px; }
+        .avatar-hub img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--white); z-index: 2; position: relative; }
+        .avatar-hub::after {
+            content: ''; position: absolute; inset: -2px; border-radius: 50%;
+            background: var(--success); opacity: 0.4; animation: pulse 2s infinite;
         }
+        @keyframes pulse { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.6); opacity: 0; } }
 
-        /* --- THE REPORT PAGE PREVIEW --- */
+        /* --- CONFIG CARD --- */
+        .config-glass {
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(15px);
+            border: 1px solid var(--white); border-radius: 25px; padding: 28px 35px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-bottom: 30px; box-shadow: 0 10px 25px rgba(11,19,43,0.04);
+        }
+        .config-group { flex: 1; margin-right: 25px; }
+        .config-group label {
+            display: block; font-family: 'JetBrains Mono'; font-size: 0.65rem;
+            font-weight: 700; margin-bottom: 10px; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--muted);
+        }
+        select {
+            width: 100%; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid rgba(0,0,0,0.08); background: var(--white);
+            font-family: 'Plus Jakarta Sans'; font-weight: 600; font-size: 0.85rem;
+            outline: none; cursor: pointer; transition: 0.3s;
+        }
+        select:focus { border-color: var(--blush); box-shadow: 0 0 0 3px rgba(91,192,190,0.15); }
+
+        .btn-print {
+            background: var(--blush); color: var(--deep); border: none;
+            padding: 16px 28px; border-radius: 16px;
+            font-family: 'Plus Jakarta Sans'; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; display: flex; align-items: center; gap: 10px;
+            text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+        }
+        .btn-print:hover { background: var(--deep); color: var(--blush); transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+
+        /* --- REPORT PREVIEW --- */
         .report-preview {
-            background: white; width: 100%; max-width: 900px; margin: 0 auto;
-            padding: 60px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            position: relative;
+            background: var(--white); width: 100%; max-width: 920px; margin: 0 auto;
+            padding: 55px; border-radius: 25px; position: relative;
+            box-shadow: 0 15px 40px rgba(11,19,43,0.06);
+            border: 1px solid rgba(0,0,0,0.04);
         }
 
-        .report-header { text-align: center; border-bottom: 3px double var(--text-dark); padding-bottom: 25px; margin-bottom: 40px; }
-        .report-header h1 { font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; }
-        .report-header .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
-        .report-header .ref-line { font-size: 0.7rem; margin-top: 8px; color: var(--text-muted); font-weight: 600; }
+        .report-header { text-align: center; border-bottom: 3px double var(--deep); padding-bottom: 25px; margin-bottom: 40px; }
+        .report-header h1 { font-family: 'Plus Jakarta Sans'; font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; }
+        .report-header .rpt-subtitle { font-size: 0.82rem; color: var(--muted); margin-top: 6px; }
+        .report-header .ref-line { font-family: 'JetBrains Mono'; font-size: 0.65rem; margin-top: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.5px; }
 
         .report-section { margin-bottom: 35px; page-break-inside: avoid; }
-        .section-title { 
-            font-size: 0.85rem; font-weight: 800; border-bottom: 2px solid var(--primary); 
-            padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; 
-            color: var(--primary); letter-spacing: 1px;
+        .section-title {
+            font-size: 0.82rem; font-weight: 800; border-bottom: 2px solid var(--blush);
+            padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase;
+            color: var(--blush); letter-spacing: 1px;
             display: flex; align-items: center; gap: 8px;
         }
         .section-title i { font-size: 1.1rem; }
 
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 40px; }
         .info-item { font-size: 0.82rem; line-height: 1.6; }
-        .info-item b { color: var(--text-dark); font-weight: 700; }
+        .info-item b { color: var(--deep); font-weight: 700; }
 
         .status-tag {
             display: inline-block; padding: 3px 10px; border-radius: 5px;
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+            font-family: 'JetBrains Mono'; font-size: 0.62rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .status-open { background: #dbeafe; color: #1d4ed8; }
         .status-progress { background: #fef3c7; color: #92400e; }
         .status-pending { background: #fed7aa; color: #9a3412; }
         .status-closed { background: #d1fae5; color: #065f46; }
 
-        .priority-tag { display: inline-block; padding: 3px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 800; }
+        .priority-tag {
+            display: inline-block; padding: 3px 10px; border-radius: 5px;
+            font-family: 'JetBrains Mono'; font-size: 0.62rem; font-weight: 800; text-transform: uppercase;
+        }
         .priority-low { background: #d1fae5; color: #065f46; }
         .priority-medium { background: #fef3c7; color: #92400e; }
         .priority-high { background: #fee2e2; color: #991b1b; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 10px 12px; background: #f1f5f9; font-size: 0.7rem; border: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; }
-        td { padding: 10px 12px; font-size: 0.78rem; border: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
-        
-        .hash-text { font-family: 'Courier New', monospace; font-size: 0.65rem; color: #475569; word-break: break-all; }
-
-        .seal-stamp {
-            position: absolute; top: 100px; right: 60px; border: 3px solid var(--primary);
-            color: var(--primary); padding: 10px 15px; border-radius: 8px; font-weight: 900;
-            transform: rotate(15deg); opacity: 0.25; font-size: 1rem; text-align: center;
-            line-height: 1.4;
+        .desc-block {
+            margin-top: 15px; font-size: 0.8rem; line-height: 1.7; color: var(--deep);
+            padding: 14px 18px; background: #f8fafc; border-radius: 12px; border: 1px solid rgba(0,0,0,0.04);
         }
 
+        /* --- TABLES --- */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th {
+            text-align: left; padding: 10px 14px; background: rgba(0,0,0,0.02);
+            font-family: 'JetBrains Mono'; font-size: 0.62rem; font-weight: 700;
+            border: 1px solid rgba(0,0,0,0.06); text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
+        }
+        td {
+            padding: 10px 14px; font-size: 0.78rem; border: 1px solid rgba(0,0,0,0.06);
+            vertical-align: top; line-height: 1.5;
+        }
+
+        .hash-text { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--muted); word-break: break-all; }
+
         .integrity-badge {
-            display: inline-block; padding: 2px 8px; border-radius: 4px; 
-            font-size: 0.7rem; font-weight: 800;
+            display: inline-block; padding: 3px 10px; border-radius: 5px;
+            font-family: 'JetBrains Mono'; font-size: 0.62rem; font-weight: 800;
         }
         .integrity-valid { background: #d1fae5; color: #065f46; }
         .integrity-compromised { background: #fee2e2; color: #991b1b; }
 
-        .summary-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;
+        .seal-stamp {
+            position: absolute; top: 90px; right: 55px; border: 3px solid var(--blush);
+            color: var(--blush); padding: 10px 15px; border-radius: 8px; font-weight: 900;
+            transform: rotate(15deg); opacity: 0.2; font-size: 0.95rem; text-align: center;
+            line-height: 1.4; font-family: 'JetBrains Mono'; letter-spacing: 1px;
         }
+
+        /* --- SUMMARY GRID --- */
+        .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
         .summary-box {
-            background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-            padding: 15px; text-align: center;
+            background: rgba(0,0,0,0.015); border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 12px; padding: 16px; text-align: center;
         }
-        .summary-box .number { font-size: 1.6rem; font-weight: 800; color: var(--text-dark); }
-        .summary-box .label { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-top: 4px; }
+        .summary-box .number { font-size: 1.6rem; font-weight: 800; color: var(--deep); }
+        .summary-box .label { font-family: 'JetBrains Mono'; font-size: 0.58rem; color: var(--muted); font-weight: 700; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; }
 
         .note-block {
             background: #fffbeb; border-left: 3px solid var(--warning); padding: 10px 15px;
-            margin: 8px 0; border-radius: 0 6px 6px 0; font-size: 0.78rem;
+            margin: 8px 0; border-radius: 0 8px 8px 0; font-size: 0.78rem;
         }
-        .note-block .note-meta { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+        .note-block .note-meta { font-family: 'JetBrains Mono'; font-size: 0.6rem; color: var(--muted); margin-top: 4px; }
 
-        .no-case-msg {
-            text-align: center; padding: 80px 40px; color: var(--text-muted);
-        }
-        .no-case-msg i { font-size: 3rem; color: var(--border); margin-bottom: 15px; display: block; }
-        .no-case-msg h3 { color: var(--text-dark); margin-bottom: 8px; }
+        .no-case-msg { text-align: center; padding: 70px 40px; color: var(--muted); }
+        .no-case-msg i { font-size: 3rem; color: var(--blush); margin-bottom: 15px; display: block; }
+        .no-case-msg h3 { color: var(--deep); margin-bottom: 8px; }
 
         .footer-section {
-            margin-top: 50px; padding-top: 30px; border-top: 2px solid var(--text-dark);
+            margin-top: 50px; padding-top: 30px; border-top: 2px solid var(--deep);
             display: flex; justify-content: space-between; align-items: flex-end;
         }
         .signature-block {
-            font-size: 0.8rem; border-top: 1px solid var(--text-dark); 
+            font-size: 0.8rem; border-top: 1px solid var(--deep);
             width: 220px; padding-top: 10px; text-align: center;
         }
         .system-seal { text-align: right; }
-        .system-seal p { font-size: 0.6rem; font-weight: 800; margin-top: 5px; }
+        .system-seal p { font-family: 'JetBrains Mono'; font-size: 0.55rem; font-weight: 800; margin-top: 5px; letter-spacing: 1px; }
 
-        /* --- PRINT MEDIA QUERY --- */
+        footer {
+            margin-top: auto; padding: 30px 10px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; color: var(--muted); text-align: center; letter-spacing: 1px;
+        }
+
+        /* --- PRINT --- */
         @media print {
-            .sidebar, .config-card { display: none !important; }
-            body { background: white; }
-            .main-wrapper { margin-left: 0; padding: 0; }
-            .report-preview { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 30px; }
-            .seal-stamp { opacity: 0.15; }
+            .sidebar, .config-glass, header, .ambient-orb, footer { display: none !important; }
+            body { background: white; padding: 0; }
+            .main-container { margin-left: 0; }
+            .report-preview { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 30px; border-radius: 0; }
+            .seal-stamp { opacity: 0.12; }
             .report-section { page-break-inside: avoid; }
         }
     </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
-        <ul class="nav-links">
-            <li><a href="{% url 'auditor_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
-            <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i> Chain of Custody</a></li>
-            <li><a href="{% url 'integrity_console' %}"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
-            <li><a href="{% url 'generate_report' %}" class="active"><i class='bx bxs-file-export'></i> Generate Report</a></li>
-            <li><a href="{% url 'logout' %}" style="color: #ef4444;"><i class='bx bx-power-off'></i> Logout</a></li>
-        </ul>
-    </div>
+    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
+    <div class="ambient-orb" style="bottom: -200px; right: -100px;"></div>
 
-    <div class="main-wrapper">
-        <div class="config-card">
+    <aside class="sidebar">
+        <div class="nav-brand"><i class='bx bxs-shield-alt-2' style="color: white;"></i></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'auditor_dashboard' %}"><i class='bx bxs-dashboard'></i><span>Dashboard</span></a></li>
+            <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i><span>Custody</span></a></li>
+            <li><a href="{% url 'integrity_console' %}"><i class='bx bxs-check-shield'></i><span>Integrity</span></a></li>
+            <li><a href="{% url 'generate_report' %}" class="active"><i class='bx bxs-file-export'></i><span>Reports</span></a></li>
+            <li><a href="{% url 'logout' %}" style="color: var(--danger);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-container">
+        <header>
+            <div class="header-title">
+                <h1>Compliance Report</h1>
+                <p class="subtitle">DETAMS Protocol &middot; 2026</p>
+            </div>
+
+            <div class="profile-trigger">
+                <a href="{% url 'profile' %}" style="text-decoration-line: none;"><div class="avatar-hub">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=0b132b&color=5bc0be" alt="User">
+                </div></a>
+                <div style="display: flex; flex-direction: column;">
+                    <b style="font-size: 0.75rem;">{{ request.user.first_name }} {{ request.user.last_name }}</b>
+                </div>
+                <i class='bx bx-chevron-down' style="color: var(--blush); margin-left: 5px;"></i>
+            </div>
+        </header>
+
+        <!-- ===== CONFIG CARD ===== -->
+        <div class="config-glass">
             <div class="config-group">
                 <label>Select Case for Report</label>
                 <form method="GET">
@@ -188,12 +284,13 @@
                 </form>
             </div>
             {% if selected_case %}
-            <button class="btn-export" onclick="window.print()">
+            <button class="btn-print" onclick="window.print()">
                 <i class='bx bxs-printer'></i> Print / Export
             </button>
             {% endif %}
         </div>
 
+        <!-- ===== REPORT PREVIEW ===== -->
         <div class="report-preview">
 
             {% if not selected_case %}
@@ -214,11 +311,11 @@
                     ACTIVE<br>INVESTIGATION
                 {% endif %}
             </div>
-            
+
             <!-- ===== REPORT HEADER ===== -->
             <div class="report-header">
                 <h1>Evidence Integrity &amp; Compliance Report</h1>
-                <p class="subtitle">Digital Forensics &amp; Chain of Custody Compliance Office</p>
+                <p class="rpt-subtitle">Digital Forensics &amp; Chain of Custody Compliance Office</p>
                 <p class="ref-line">Reference: {{ reference_id }} &nbsp;|&nbsp; Generated: {{ today|date:"F d, Y — h:i A" }}</p>
             </div>
 
@@ -229,11 +326,11 @@
                     <div class="info-item"><b>Case ID:</b> {{ selected_case.case_id }}</div>
                     <div class="info-item"><b>Title:</b> {{ selected_case.title }}</div>
                     <div class="info-item"><b>Category:</b> {{ selected_case.get_category_display }}{% if selected_case.category == "OTHER" %} — {{ selected_case.category_other }}{% endif %}</div>
-                    <div class="info-item"><b>Priority:</b> 
+                    <div class="info-item"><b>Priority:</b>
                         <span class="priority-tag priority-{{ selected_case.priority|lower }}">{{ selected_case.get_priority_display }}</span>
                     </div>
-                    <div class="info-item"><b>Status:</b> 
-                        <span class="status-tag 
+                    <div class="info-item"><b>Status:</b>
+                        <span class="status-tag
                             {% if selected_case.status == 'OPEN' %}status-open
                             {% elif selected_case.status == 'IN_PROGRESS' %}status-progress
                             {% elif selected_case.status == 'PENDING_CLOSURE' %}status-pending
@@ -248,12 +345,12 @@
                 {% if selected_case.description %}
                 <div style="margin-top: 15px;">
                     <div class="info-item"><b>Case Description:</b></div>
-                    <p style="font-size: 0.8rem; line-height: 1.7; color: var(--text-dark); margin-top: 5px; padding: 10px; background: #f8fafc; border-radius: 8px;">{{ selected_case.description }}</p>
+                    <p class="desc-block">{{ selected_case.description }}</p>
                 </div>
                 {% endif %}
             </div>
 
-            <!-- ===== SECTION 2: ASSIGNED INVESTIGATORS ===== -->
+            <!-- ===== SECTION 2: ASSIGNED PERSONNEL ===== -->
             <div class="report-section">
                 <div class="section-title"><i class='bx bx-group'></i> Assigned Personnel</div>
                 {% if investigators %}
@@ -280,7 +377,7 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p style="font-size: 0.82rem; color: var(--text-muted);">No investigators assigned to this case.</p>
+                <p style="font-size: 0.82rem; color: var(--muted);">No investigators assigned to this case.</p>
                 {% endif %}
             </div>
 
@@ -370,10 +467,10 @@
                         <tr>
                             <td></td>
                             <td colspan="6">
-                                <b style="font-size: 0.7rem;">SHA-256 (Origin):</b>
+                                <b style="font-size: 0.65rem;">SHA-256 (Origin):</b>
                                 <span class="hash-text">{{ item.evidence.sha256_hash }}</span>
                                 <br>
-                                <b style="font-size: 0.7rem;">SHA-256 (Current):</b>
+                                <b style="font-size: 0.65rem;">SHA-256 (Current):</b>
                                 <span class="hash-text">{{ item.current_hash }}</span>
                             </td>
                         </tr>
@@ -382,7 +479,7 @@
                         <tr>
                             <td></td>
                             <td colspan="6">
-                                <b style="font-size: 0.7rem; color: var(--text-dark);">Investigator Notes:</b>
+                                <b style="font-size: 0.65rem; color: var(--deep);">Investigator Notes:</b>
                                 {% for note in item.notes %}
                                 <div class="note-block">
                                     {{ note.content }}
@@ -397,7 +494,7 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p style="font-size: 0.82rem; color: var(--text-muted);">No evidence assets found for this case.</p>
+                <p style="font-size: 0.82rem; color: var(--muted);">No evidence assets found for this case.</p>
                 {% endif %}
             </div>
 
@@ -430,24 +527,24 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p style="font-size: 0.82rem; color: var(--text-muted);">No custody events recorded.</p>
+                <p style="font-size: 0.82rem; color: var(--muted);">No custody events recorded.</p>
                 {% endif %}
             </div>
 
             <!-- ===== SECTION 6: COMPLIANCE DECLARATION ===== -->
             <div class="report-section">
                 <div class="section-title"><i class='bx bx-check-circle'></i> Compliance Declaration</div>
-                <p style="font-size: 0.8rem; line-height: 1.8; color: var(--text-dark); text-align: justify;">
-                    I, <b>{{ request.user.get_full_name }}</b>, serving as the designated Auditor, have performed a 
-                    comprehensive review of the Chain of Custody for Case <b>{{ selected_case.case_id }}</b> 
-                    ({{ selected_case.title }}). This report covers <b>{% if evidences %}{{ evidences.count }}{% else %}0{% endif %}</b> 
-                    evidence item(s) and <b>{% if custody_logs %}{{ custody_logs.count }}{% else %}0{% endif %}</b> 
+                <p style="font-size: 0.8rem; line-height: 1.8; color: var(--deep); text-align: justify;">
+                    I, <b>{{ request.user.get_full_name }}</b>, serving as the designated Auditor, have performed a
+                    comprehensive review of the Chain of Custody for Case <b>{{ selected_case.case_id }}</b>
+                    ({{ selected_case.title }}). This report covers <b>{% if evidences %}{{ evidences.count }}{% else %}0{% endif %}</b>
+                    evidence item(s) and <b>{% if custody_logs %}{{ custody_logs.count }}{% else %}0{% endif %}</b>
                     custody event(s).
                 </p>
-                <p style="font-size: 0.8rem; line-height: 1.8; color: var(--text-dark); margin-top: 10px; text-align: justify;">
-                    All cryptographic SHA-256 signatures have been verified against the secure evidence registry. 
-                    The evidence chain has been examined for completeness and continuity. This document is generated 
-                    by the DETAMS (Digital Evidence Tracking and Management System) and is intended for use in 
+                <p style="font-size: 0.8rem; line-height: 1.8; color: var(--deep); margin-top: 10px; text-align: justify;">
+                    All cryptographic SHA-256 signatures have been verified against the secure evidence registry.
+                    The evidence chain has been examined for completeness and continuity. This document is generated
+                    by the DETAMS (Digital Evidence Tracking and Management System) and is intended for use in
                     legal proceedings. Any unauthorized modification of this report is strictly prohibited.
                 </p>
             </div>
@@ -456,22 +553,26 @@
             <div class="footer-section">
                 <div class="signature-block">
                     <b>{{ request.user.get_full_name }}</b><br>
-                    <span style="font-size: 0.72rem; color: var(--text-muted);">Authorized Auditor</span>
+                    <span style="font-size: 0.72rem; color: var(--muted);">Authorized Auditor</span>
                 </div>
                 <div style="text-align: center;">
-                    <span style="font-size: 0.7rem; color: var(--text-muted);">Report Date</span><br>
+                    <span style="font-family: 'JetBrains Mono'; font-size: 0.65rem; color: var(--muted);">Report Date</span><br>
                     <b style="font-size: 0.82rem;">{{ today|date:"F d, Y" }}</b>
                 </div>
                 <div class="system-seal">
-                    <i class='bx bxs-shield-alt-2' style="font-size: 2.5rem; color: var(--text-dark);"></i>
+                    <i class='bx bxs-shield-alt-2' style="font-size: 2.5rem; color: var(--deep);"></i>
                     <p>EVIDENCELOCK SECURE SYSTEM</p>
-                    <p style="font-size: 0.55rem; color: var(--text-muted);">{{ reference_id }}</p>
+                    <p style="font-size: 0.5rem; color: var(--muted);">{{ reference_id }}</p>
                 </div>
             </div>
 
             {% endif %}
         </div>
-    </div>
+
+        <footer>
+            &copy; 2026 DIGITAL EVIDENCE TRACKING & MANAGEMENT SYSTEM | ALL RIGHTS RESERVED
+        </footer>
+    </main>
 
 </body>
 </html>

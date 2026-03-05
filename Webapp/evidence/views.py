@@ -141,10 +141,13 @@ def upload_evidence(request):
         if file:
             sha256_hash = HashService.generate_sha256(file)
 
+            description = request.POST.get("description", "").strip()
+
             evidence = Evidence.objects.create(
                 case=case,
                 file=file,
                 file_name=file.name,
+                description=description,
                 file_type=file.content_type,
                 file_size=file.size,
                 sha256_hash=sha256_hash,
