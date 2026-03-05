@@ -440,23 +440,6 @@ Digital-Evidence-Tracking-and-Management-System/
 ```
 
 ---
-
-## Screenshots
-
-> *Add screenshots of the application here*
-
-| Page | Description |
-|---|---|
-| Login | Split-panel design with dark branding |
-| Admin Dashboard | Stats, quick actions, activity feed |
-| SO Dashboard | Case management hub |
-| Investigator Dashboard | Evidence upload & observations |
-| Auditor Dashboard | Audit tools & compliance |
-| Integrity Console | Bulk SHA-256 verification results |
-| Compliance Report | Printable per-case report |
-
----
-
 <p align="center">
   Built with Django  •  Secured with SHA-256  •  Audited with Immutable Logs
 </p>
