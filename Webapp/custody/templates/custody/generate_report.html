@@ -13,7 +13,8 @@
             --primary: #059669;    --secondary: #10b981;  
             --bg-light: #f8fafc;   --text-dark: #0f172a;  
             --text-muted: #64748b; --border: #e2e8f0;     
-            --white: #ffffff;
+            --white: #ffffff;      --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
@@ -27,6 +28,7 @@
         .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
         .logo i { color: var(--secondary); font-size: 2.2rem; }
         .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
         .nav-links a {
             display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
             padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
@@ -49,45 +51,109 @@
         .btn-export {
             background: var(--primary); color: white; border: none; padding: 12px 25px;
             border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            text-decoration: none; font-size: 0.9rem;
         }
 
         /* --- THE REPORT PAGE PREVIEW --- */
         .report-preview {
-            background: white; width: 100%; max-width: 850px; margin: 0 auto;
+            background: white; width: 100%; max-width: 900px; margin: 0 auto;
             padding: 60px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05);
             position: relative;
         }
 
-        .report-header { text-align: center; border-bottom: 2px solid var(--text-dark); padding-bottom: 20px; margin-bottom: 40px; }
-        .report-header h1 { font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
-        .report-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
+        .report-header { text-align: center; border-bottom: 3px double var(--text-dark); padding-bottom: 25px; margin-bottom: 40px; }
+        .report-header h1 { font-size: 1.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 3px; }
+        .report-header .subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
+        .report-header .ref-line { font-size: 0.7rem; margin-top: 8px; color: var(--text-muted); font-weight: 600; }
 
-        .report-section { margin-bottom: 35px; }
-        .section-title { font-size: 0.9rem; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; color: var(--primary); }
+        .report-section { margin-bottom: 35px; page-break-inside: avoid; }
+        .section-title { 
+            font-size: 0.85rem; font-weight: 800; border-bottom: 2px solid var(--primary); 
+            padding-bottom: 8px; margin-bottom: 15px; text-transform: uppercase; 
+            color: var(--primary); letter-spacing: 1px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-title i { font-size: 1.1rem; }
 
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .info-item { font-size: 0.85rem; margin-bottom: 5px; }
-        .info-item b { color: var(--text-dark); }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 40px; }
+        .info-item { font-size: 0.82rem; line-height: 1.6; }
+        .info-item b { color: var(--text-dark); font-weight: 700; }
+
+        .status-tag {
+            display: inline-block; padding: 3px 10px; border-radius: 5px;
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+        }
+        .status-open { background: #dbeafe; color: #1d4ed8; }
+        .status-progress { background: #fef3c7; color: #92400e; }
+        .status-pending { background: #fed7aa; color: #9a3412; }
+        .status-closed { background: #d1fae5; color: #065f46; }
+
+        .priority-tag { display: inline-block; padding: 3px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 800; }
+        .priority-low { background: #d1fae5; color: #065f46; }
+        .priority-medium { background: #fef3c7; color: #92400e; }
+        .priority-high { background: #fee2e2; color: #991b1b; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; padding: 10px; background: #f8fafc; font-size: 0.75rem; border: 1px solid var(--border); }
-        td { padding: 10px; font-size: 0.8rem; border: 1px solid var(--border); vertical-align: top; }
+        th { text-align: left; padding: 10px 12px; background: #f1f5f9; font-size: 0.7rem; border: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 800; }
+        td { padding: 10px 12px; font-size: 0.78rem; border: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
         
-        .hash-text { font-family: monospace; font-size: 0.7rem; color: #475569; }
+        .hash-text { font-family: 'Courier New', monospace; font-size: 0.65rem; color: #475569; word-break: break-all; }
 
         .seal-stamp {
-            position: absolute; top: 120px; right: 60px; border: 3px solid var(--primary);
-            color: var(--primary); padding: 10px; border-radius: 8px; font-weight: 900;
-            transform: rotate(15deg); opacity: 0.3; font-size: 1.2rem;
+            position: absolute; top: 100px; right: 60px; border: 3px solid var(--primary);
+            color: var(--primary); padding: 10px 15px; border-radius: 8px; font-weight: 900;
+            transform: rotate(15deg); opacity: 0.25; font-size: 1rem; text-align: center;
+            line-height: 1.4;
         }
-        
+
+        .integrity-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 4px; 
+            font-size: 0.7rem; font-weight: 800;
+        }
+        .integrity-valid { background: #d1fae5; color: #065f46; }
+        .integrity-compromised { background: #fee2e2; color: #991b1b; }
+
+        .summary-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;
+        }
+        .summary-box {
+            background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+            padding: 15px; text-align: center;
+        }
+        .summary-box .number { font-size: 1.6rem; font-weight: 800; color: var(--text-dark); }
+        .summary-box .label { font-size: 0.65rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-top: 4px; }
+
+        .note-block {
+            background: #fffbeb; border-left: 3px solid var(--warning); padding: 10px 15px;
+            margin: 8px 0; border-radius: 0 6px 6px 0; font-size: 0.78rem;
+        }
+        .note-block .note-meta { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
+
+        .no-case-msg {
+            text-align: center; padding: 80px 40px; color: var(--text-muted);
+        }
+        .no-case-msg i { font-size: 3rem; color: var(--border); margin-bottom: 15px; display: block; }
+        .no-case-msg h3 { color: var(--text-dark); margin-bottom: 8px; }
+
+        .footer-section {
+            margin-top: 50px; padding-top: 30px; border-top: 2px solid var(--text-dark);
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .signature-block {
+            font-size: 0.8rem; border-top: 1px solid var(--text-dark); 
+            width: 220px; padding-top: 10px; text-align: center;
+        }
+        .system-seal { text-align: right; }
+        .system-seal p { font-size: 0.6rem; font-weight: 800; margin-top: 5px; }
 
         /* --- PRINT MEDIA QUERY --- */
         @media print {
-            .sidebar, .config-card, header { display: none !important; }
+            .sidebar, .config-card { display: none !important; }
             body { background: white; }
             .main-wrapper { margin-left: 0; padding: 0; }
-            .report-preview { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+            .report-preview { border: none; box-shadow: none; width: 100%; max-width: 100%; padding: 30px; }
+            .seal-stamp { opacity: 0.15; }
+            .report-section { page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -99,134 +165,311 @@
             <li><a href="{% url 'auditor_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i> Chain of Custody</a></li>
             <li><a href="{% url 'integrity_console' %}"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
-            <li><a href="#" class="active"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+            <li><a href="{% url 'generate_report' %}" class="active"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+            <li><a href="{% url 'logout' %}" style="color: #ef4444;"><i class='bx bx-power-off'></i> Logout</a></li>
         </ul>
     </div>
 
     <div class="main-wrapper">
         <div class="config-card">
             <div class="config-group">
-                <label>Select Case</label>
+                <label>Select Case for Report</label>
                 <form method="GET">
                     <select name="case_id" onchange="this.form.submit()">
-                        <option value="">Select Case</option>
-
+                        <option value="">— Select a Case —</option>
                         {% for case in cases %}
                             <option value="{{ case.id }}"
-                                {% if selected_case and case.id == selected_case.id %}
-                                    selected
-                                {% endif %}
+                                {% if selected_case and case.id == selected_case.id %}selected{% endif %}
                             >
-                                {{ case.case_id }} - {{ case.title }}
+                                {{ case.case_id }} — {{ case.title }} ({{ case.get_status_display }})
                             </option>
                         {% endfor %}
                     </select>
                 </form>
             </div>
-            <!-- <div class="config-group">
-                <label>Report Type</label>
-                <select>
-                    <option>Full Compliance Audit</option>
-                    <option>Integrity Verification Only</option>
-                    <option>Chain of Custody Summary</option>
-                </select>
-            </div> -->
+            {% if selected_case %}
             <button class="btn-export" onclick="window.print()">
-                <i class='bx bxs-file-pdf'></i> Export for Court
+                <i class='bx bxs-printer'></i> Print / Export
             </button>
+            {% endif %}
         </div>
 
         <div class="report-preview">
+
+            {% if not selected_case %}
+                <div class="no-case-msg">
+                    <i class='bx bxs-file-find'></i>
+                    <h3>No Case Selected</h3>
+                    <p>Please select a case from the dropdown above to generate a compliance report.</p>
+                </div>
+            {% else %}
+
+            <!-- Seal Stamp -->
             <div class="seal-stamp">
                 {% if selected_case.status == "CLOSED" %}
-                    INTEGRITY VERIFIED
+                    CASE CLOSED<br>VERIFIED
+                {% elif selected_case.status == "PENDING_CLOSURE" %}
+                    PENDING<br>CLOSURE
                 {% else %}
-                    IN REVIEW
+                    ACTIVE<br>INVESTIGATION
                 {% endif %}
             </div>
             
+            <!-- ===== REPORT HEADER ===== -->
             <div class="report-header">
-                <h1>Evidence Integrity Report</h1>
-                <p>Digital Forensics & Chain of Custody Compliance Office</p>
-                <p style="font-size: 0.7rem;">Reference ID: {{ reference_id }}</p>
+                <h1>Evidence Integrity &amp; Compliance Report</h1>
+                <p class="subtitle">Digital Forensics &amp; Chain of Custody Compliance Office</p>
+                <p class="ref-line">Reference: {{ reference_id }} &nbsp;|&nbsp; Generated: {{ today|date:"F d, Y — h:i A" }}</p>
             </div>
 
+            <!-- ===== SECTION 1: CASE METADATA ===== -->
             <div class="report-section">
-                <div class="section-title">Case Metadata</div>
+                <div class="section-title"><i class='bx bx-folder-open'></i> Case Metadata</div>
                 <div class="info-grid">
-                    {% if selected_case %}
-
                     <div class="info-item"><b>Case ID:</b> {{ selected_case.case_id }}</div>
-                    <div class="info-item"><b>Subject:</b> {{ selected_case.title }}</div>
-                    <div class="info-item"><b>Status:</b> {{ selected_case.status }}</div>
-
-                    <div class="info-item"><b>Date Generated:</b> {{ today|date:"M d, Y" }}</div>
-                    <div class="info-item"><b>Senior Officer:</b> {{ selected_case.assigned_so.get_full_name }}</div>
+                    <div class="info-item"><b>Title:</b> {{ selected_case.title }}</div>
+                    <div class="info-item"><b>Category:</b> {{ selected_case.get_category_display }}{% if selected_case.category == "OTHER" %} — {{ selected_case.category_other }}{% endif %}</div>
+                    <div class="info-item"><b>Priority:</b> 
+                        <span class="priority-tag priority-{{ selected_case.priority|lower }}">{{ selected_case.get_priority_display }}</span>
+                    </div>
+                    <div class="info-item"><b>Status:</b> 
+                        <span class="status-tag 
+                            {% if selected_case.status == 'OPEN' %}status-open
+                            {% elif selected_case.status == 'IN_PROGRESS' %}status-progress
+                            {% elif selected_case.status == 'PENDING_CLOSURE' %}status-pending
+                            {% else %}status-closed{% endif %}
+                        ">{{ selected_case.get_status_display }}</span>
+                    </div>
+                    <div class="info-item"><b>Created:</b> {{ selected_case.created_at|date:"M d, Y — h:i A" }}</div>
+                    <div class="info-item"><b>Senior Officer:</b> {{ selected_case.assigned_so.get_full_name|default:"Not Assigned" }}</div>
                     <div class="info-item"><b>Auditor:</b> {{ request.user.get_full_name }}</div>
-
-                    {% endif %}
                 </div>
+
+                {% if selected_case.description %}
+                <div style="margin-top: 15px;">
+                    <div class="info-item"><b>Case Description:</b></div>
+                    <p style="font-size: 0.8rem; line-height: 1.7; color: var(--text-dark); margin-top: 5px; padding: 10px; background: #f8fafc; border-radius: 8px;">{{ selected_case.description }}</p>
+                </div>
+                {% endif %}
             </div>
 
-            
-
+            <!-- ===== SECTION 2: ASSIGNED INVESTIGATORS ===== -->
             <div class="report-section">
-                <div class="section-title">Verified Asset Registry</div>
+                <div class="section-title"><i class='bx bx-group'></i> Assigned Personnel</div>
+                {% if investigators %}
                 <table>
                     <thead>
                         <tr>
-                            <th>Asset Name</th>
-                            <th>Origin Hash (SHA-256)</th>
-                            <th>Audit Status</th>
+                            <th width="5%">#</th>
+                            <th width="30%">Full Name</th>
+                            <th width="25%">Username</th>
+                            <th width="20%">Badge Number</th>
+                            <th width="20%">Department</th>
                         </tr>
                     </thead>
                     <tbody>
-
-                    {% if evidences %}
-                        {% for evidence in evidences %}
+                        {% for inv in investigators %}
                         <tr>
-                            <td>{{ evidence.file_name }}</td>
-
-                            <td class="hash-text">
-                                {{ evidence.sha256_hash }}
-                            </td>
-
-                            <td>
-                                <b style="color: var(--primary);">✓ VERIFIED</b>
-                            </td>
+                            <td>{{ forloop.counter }}</td>
+                            <td><b>{{ inv.get_full_name }}</b></td>
+                            <td>{{ inv.username }}</td>
+                            <td>{{ inv.profile.badge_number|default:"—" }}</td>
+                            <td>{{ inv.profile.department|default:"—" }}</td>
                         </tr>
                         {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="3">No assets found.</td>
-                        </tr>
-                    {% endif %}
-
                     </tbody>
                 </table>
+                {% else %}
+                <p style="font-size: 0.82rem; color: var(--text-muted);">No investigators assigned to this case.</p>
+                {% endif %}
             </div>
 
+            <!-- ===== SECTION 3: SUMMARY STATISTICS ===== -->
             <div class="report-section">
-                <div class="section-title">Compliance Declaration</div>
-                <p style="font-size: 0.8rem; line-height: 1.6; color: var(--text-dark);">
-                    I, the undersigned Auditor, have performed a comprehensive review of the Chain of Custody for Case EL-2026-X49. 
-                    All cryptographic signatures have been verified against the secure registry. No unauthorized access attempts or data 
-                    mismatches were detected. The evidence remains in a pristine, tamper-free state suitable for legal proceedings.
+                <div class="section-title"><i class='bx bx-bar-chart-alt-2'></i> Report Summary</div>
+                <div class="summary-grid">
+                    <div class="summary-box">
+                        <div class="number">{% if evidences %}{{ evidences.count }}{% else %}0{% endif %}</div>
+                        <div class="label">Evidence Items</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="number">{% if custody_logs %}{{ custody_logs.count }}{% else %}0{% endif %}</div>
+                        <div class="label">Custody Events</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="number">{% if investigators %}{{ investigators|length }}{% else %}0{% endif %}</div>
+                        <div class="label">Personnel</div>
+                    </div>
+                    <div class="summary-box">
+                        <div class="number">
+                            {% if total_evidence_size %}
+                                {% widthratio total_evidence_size 1048576 1 %}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </div>
+                        <div class="label">Total Size (MB)</div>
+                    </div>
+                </div>
+
+                {% if action_summary %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Action Type</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for action, count in action_summary.items %}
+                        <tr>
+                            <td>{{ action }}</td>
+                            <td><b>{{ count }}</b></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+
+            <!-- ===== SECTION 4: EVIDENCE ASSET REGISTRY ===== -->
+            <div class="report-section">
+                <div class="section-title"><i class='bx bx-data'></i> Verified Evidence Asset Registry</div>
+                {% if evidence_details %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="22%">File Name</th>
+                            <th width="10%">Type</th>
+                            <th width="10%">Size</th>
+                            <th width="15%">Uploaded By</th>
+                            <th width="15%">Upload Date</th>
+                            <th width="13%">Integrity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in evidence_details %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><b>{{ item.evidence.file_name }}</b></td>
+                            <td>{{ item.evidence.file_type }}</td>
+                            <td style="font-size: 0.72rem;">
+                                {% widthratio item.evidence.file_size 1024 1 %} KB
+                            </td>
+                            <td>{{ item.evidence.uploaded_by.get_full_name }}</td>
+                            <td style="font-size: 0.72rem;">{{ item.evidence.uploaded_at|date:"M d, Y" }}</td>
+                            <td>
+                                {% if item.is_valid %}
+                                    <span class="integrity-badge integrity-valid">&#10003; VALID</span>
+                                {% else %}
+                                    <span class="integrity-badge integrity-compromised">&#10007; COMPROMISED</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td colspan="6">
+                                <b style="font-size: 0.7rem;">SHA-256 (Origin):</b>
+                                <span class="hash-text">{{ item.evidence.sha256_hash }}</span>
+                                <br>
+                                <b style="font-size: 0.7rem;">SHA-256 (Current):</b>
+                                <span class="hash-text">{{ item.current_hash }}</span>
+                            </td>
+                        </tr>
+
+                        {% if item.notes %}
+                        <tr>
+                            <td></td>
+                            <td colspan="6">
+                                <b style="font-size: 0.7rem; color: var(--text-dark);">Investigator Notes:</b>
+                                {% for note in item.notes %}
+                                <div class="note-block">
+                                    {{ note.content }}
+                                    <div class="note-meta">— {{ note.author.get_full_name }}, {{ note.created_at|date:"M d, Y h:i A" }}</div>
+                                </div>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="font-size: 0.82rem; color: var(--text-muted);">No evidence assets found for this case.</p>
+                {% endif %}
+            </div>
+
+            <!-- ===== SECTION 5: CHAIN OF CUSTODY LOG ===== -->
+            <div class="report-section">
+                <div class="section-title"><i class='bx bx-link-alt'></i> Chain of Custody Timeline</div>
+                {% if custody_logs %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="18%">Timestamp</th>
+                            <th width="15%">Action</th>
+                            <th width="15%">Performed By</th>
+                            <th width="15%">Evidence</th>
+                            <th width="32%">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in custody_logs %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td style="font-size: 0.72rem;">{{ log.timestamp|date:"M d, Y h:i A" }}</td>
+                            <td><b>{{ log.get_action_type_display }}</b></td>
+                            <td>{{ log.performed_by.get_full_name }}</td>
+                            <td>{% if log.evidence %}{{ log.evidence.file_name }}{% else %}—{% endif %}</td>
+                            <td style="font-size: 0.75rem;">{{ log.remarks|default:"—" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="font-size: 0.82rem; color: var(--text-muted);">No custody events recorded.</p>
+                {% endif %}
+            </div>
+
+            <!-- ===== SECTION 6: COMPLIANCE DECLARATION ===== -->
+            <div class="report-section">
+                <div class="section-title"><i class='bx bx-check-circle'></i> Compliance Declaration</div>
+                <p style="font-size: 0.8rem; line-height: 1.8; color: var(--text-dark); text-align: justify;">
+                    I, <b>{{ request.user.get_full_name }}</b>, serving as the designated Auditor, have performed a 
+                    comprehensive review of the Chain of Custody for Case <b>{{ selected_case.case_id }}</b> 
+                    ({{ selected_case.title }}). This report covers <b>{% if evidences %}{{ evidences.count }}{% else %}0{% endif %}</b> 
+                    evidence item(s) and <b>{% if custody_logs %}{{ custody_logs.count }}{% else %}0{% endif %}</b> 
+                    custody event(s).
+                </p>
+                <p style="font-size: 0.8rem; line-height: 1.8; color: var(--text-dark); margin-top: 10px; text-align: justify;">
+                    All cryptographic SHA-256 signatures have been verified against the secure evidence registry. 
+                    The evidence chain has been examined for completeness and continuity. This document is generated 
+                    by the DETAMS (Digital Evidence Tracking and Management System) and is intended for use in 
+                    legal proceedings. Any unauthorized modification of this report is strictly prohibited.
                 </p>
             </div>
 
-            
-
-            <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
-                <div style="font-size: 0.8rem; border-top: 1px solid var(--text-dark); width: 200px; padding-top: 10px; text-align: center;">
-                    <b>Official Signature</b><br>
-                    Legal Auditor Vance
+            <!-- ===== FOOTER: SIGNATURE ===== -->
+            <div class="footer-section">
+                <div class="signature-block">
+                    <b>{{ request.user.get_full_name }}</b><br>
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">Authorized Auditor</span>
                 </div>
-                <div style="text-align: right;">
+                <div style="text-align: center;">
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">Report Date</span><br>
+                    <b style="font-size: 0.82rem;">{{ today|date:"F d, Y" }}</b>
+                </div>
+                <div class="system-seal">
                     <i class='bx bxs-shield-alt-2' style="font-size: 2.5rem; color: var(--text-dark);"></i>
-                    <p style="font-size: 0.6rem; font-weight: 800;">EVIDENCELOCK SECURE SYSTEM</p>
+                    <p>EVIDENCELOCK SECURE SYSTEM</p>
+                    <p style="font-size: 0.55rem; color: var(--text-muted);">{{ reference_id }}</p>
                 </div>
             </div>
+
+            {% endif %}
         </div>
     </div>
 

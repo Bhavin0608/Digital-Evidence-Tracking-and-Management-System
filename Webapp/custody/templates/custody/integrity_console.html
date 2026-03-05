@@ -14,6 +14,7 @@
             --bg-light: #f8fafc;   --text-dark: #0f172a;  
             --text-muted: #64748b; --border: #e2e8f0;     
             --white: #ffffff;      --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
@@ -36,100 +37,200 @@
 
         /* --- MAIN --- */
         .main-wrapper { margin-left: 280px; flex: 1; padding: 40px; }
-        
-        .checker-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+
+        .page-header { margin-bottom: 30px; }
+        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); }
+        .page-header p { color: var(--text-muted); font-size: 0.9rem; margin-top: 5px; }
+
+        .checker-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
 
         /* Control Panel */
         .control-panel {
-            background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border);
+            background: white; padding: 25px 30px; border-radius: 16px; border: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         }
+        .control-info h4 { font-weight: 800; font-size: 1rem; color: var(--text-dark); margin-bottom: 4px; }
+        .control-info p { font-size: 0.82rem; color: var(--text-muted); }
         .btn-scan {
-            background: var(--primary); color: white; border: none; padding: 12px 25px;
+            background: var(--primary); color: white; border: none; padding: 14px 28px;
             border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 10px;
+            font-size: 0.9rem; transition: 0.3s;
         }
+        .btn-scan:hover { background: #047857; }
+
+        /* Summary Cards */
+        .summary-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+        }
+        .summary-card {
+            background: white; border-radius: 16px; border: 1px solid var(--border);
+            padding: 25px; display: flex; align-items: center; gap: 18px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .summary-icon {
+            width: 55px; height: 55px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+        .summary-icon.icon-total { background: #ede9fe; color: #7c3aed; }
+        .summary-icon.icon-valid { background: #d1fae5; color: #059669; }
+        .summary-icon.icon-compromised { background: #fee2e2; color: #dc2626; }
+        .summary-value { font-size: 2rem; font-weight: 800; color: var(--text-dark); }
+        .summary-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
         /* Registry Table */
         .table-container { 
-            background: white; border-radius: 20px; border: 1px solid var(--border); 
+            background: white; border-radius: 16px; border: 1px solid var(--border); 
             overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
         }
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 20px; background: #f8fafc; text-align: left; font-size: 0.75rem; font-weight: 800; color: var(--text-dark); border-bottom: 2px solid var(--border); }
-        td { padding: 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .table-header {
+            padding: 20px 25px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .table-header h3 { font-size: 1rem; font-weight: 800; color: var(--text-dark); }
+        .table-header span { font-size: 0.75rem; color: var(--text-muted); }
 
-        .hash-box { font-family: monospace; font-size: 0.75rem; background: #f1f5f9; padding: 6px; border-radius: 6px; display: block; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            padding: 14px 20px; background: #f8fafc; text-align: left; 
+            font-size: 0.7rem; font-weight: 800; color: var(--text-dark); 
+            border-bottom: 2px solid var(--border); text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+
+        .evidence-name { font-weight: 700; color: var(--text-dark); margin-bottom: 3px; }
+        .evidence-case { font-size: 0.72rem; color: var(--text-muted); }
+
+        .hash-box { 
+            font-family: 'Courier New', monospace; font-size: 0.68rem; 
+            background: #f1f5f9; padding: 8px 12px; border-radius: 8px; 
+            display: block; margin-top: 4px; word-break: break-all;
+            color: #475569; line-height: 1.5;
+        }
+        .hash-box.hash-mismatch { background: #fef2f2; color: #991b1b; }
         
         /* Status Badges */
-        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; }
+        .status-badge { 
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; 
+        }
         .status-valid { background: #d1fae5; color: #065f46; }
         .status-warning { background: #fee2e2; color: #991b1b; }
 
-        /* Verification Animation Overlay */
-        #scanOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); z-index: 1000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            color: white;
-            transition: opacity 0.5s ease;
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: var(--text-muted);
         }
-        .scanner-line {
-            width: 300px; height: 2px; background: var(--secondary);
-            box-shadow: 0 0 15px var(--secondary);
-            position: relative; animation: scan 2s infinite ease-in-out;
+        .empty-state i { font-size: 3rem; color: var(--border); margin-bottom: 15px; display: block; }
+        .empty-state h3 { color: var(--text-dark); margin-bottom: 8px; font-size: 1.1rem; }
+
+        /* Alert banner */
+        .alert-banner {
+            padding: 15px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 0;
         }
-        @keyframes scan {
-            0%, 100% { transform: translateY(-50px); }
-            50% { transform: translateY(50px); }
-        }
+        .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .alert-danger { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+        .alert-banner i { font-size: 1.3rem; }
     </style>
 </head>
 <body>
-
-    <div id="scanOverlay">
-        <i class='bx bx-shield-quarter' style="font-size: 4rem; color: var(--secondary); margin-bottom: 20px;"></i>
-        <h3>Cryptographic Verification in Progress...</h3>
-        <p style="color: #94a3b8; margin: 10px 0 30px;">Recalculating SHA-256 for all local evidence assets</p>
-        <div class="scanner-line"></div>
-    </div>
 
     <div class="sidebar">
         <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
         <ul class="nav-links">
             <li><a href="{% url 'auditor_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
             <li><a href="{% url 'timeline' %}"><i class='bx bx-history'></i> Chain of Custody</a></li>
-            <li><a href="#" class="active"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
-            <li><a href="#"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+            <li><a href="{% url 'integrity_console' %}" class="active"><i class='bx bxs-check-shield'></i> Integrity Check</a></li>
+            <li><a href="{% url 'generate_report' %}"><i class='bx bxs-file-export'></i> Generate Report</a></li>
+            <li><a href="{% url 'logout' %}" style="color: #ef4444;"><i class='bx bx-power-off'></i> Logout</a></li>
         </ul>
     </div>
 
     <div class="main-wrapper">
-        <div class="header" style="margin-bottom: 30px;">
+
+        <div class="page-header">
             <h2>Integrity Verification Console</h2>
-            <p style="color: var(--text-muted);">Compare origin signatures against live data to detect tampering.</p>
+            <p>Compare origin SHA-256 signatures against live data to detect evidence tampering.</p>
         </div>
 
         <div class="checker-grid">
+
+            <!-- ===== CONTROL PANEL ===== -->
             <div class="control-panel">
-                <div>
-                    <h4 style="font-weight: 800;">Registry Scan</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Last verified: 2 hours ago</p>
+                <div class="control-info">
+                    <h4><i class='bx bx-radar' style="vertical-align: middle; margin-right: 5px;"></i> Registry Scan</h4>
+                    <p>
+                        {% if last_verify %}
+                            Last verified: {{ last_verify.timestamp|date:"M d, Y — h:i A" }}
+                            by {{ last_verify.performed_by.get_full_name }}
+                        {% else %}
+                            No verification scans have been performed yet.
+                        {% endif %}
+                    </p>
                 </div>
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn-scan" onclick="runIntegrityScan();">
-                        <i class='bx bx-radar'></i> Run Global Integrity Check
+                    <button type="submit" class="btn-scan">
+                        <i class='bx bx-shield-quarter'></i> Run Global Integrity Check
                     </button>
                 </form>
             </div>
 
+            <!-- ===== SUMMARY CARDS (only if scan was performed) ===== -->
+            {% if scan_performed %}
+            <div class="summary-row">
+                <div class="summary-card">
+                    <div class="summary-icon icon-total"><i class='bx bx-data'></i></div>
+                    <div>
+                        <div class="summary-value">{{ total_checked }}</div>
+                        <div class="summary-label">Assets Scanned</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon icon-valid"><i class='bx bx-check-double'></i></div>
+                    <div>
+                        <div class="summary-value">{{ total_valid }}</div>
+                        <div class="summary-label">Integrity Valid</div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon icon-compromised"><i class='bx bx-error-alt'></i></div>
+                    <div>
+                        <div class="summary-value">{{ total_compromised }}</div>
+                        <div class="summary-label">Compromised</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert Banner -->
+            {% if total_compromised > 0 %}
+                <div class="alert-banner alert-danger">
+                    <i class='bx bx-error-circle'></i>
+                    WARNING: {{ total_compromised }} evidence file(s) show hash mismatches. Possible tampering detected — investigate immediately.
+                </div>
+            {% else %}
+                <div class="alert-banner alert-success">
+                    <i class='bx bx-check-circle'></i>
+                    All {{ total_valid }} evidence files passed integrity verification. No tampering detected.
+                </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- ===== RESULTS TABLE ===== -->
             <div class="table-container">
+                <div class="table-header">
+                    <h3><i class='bx bx-table' style="vertical-align: middle; margin-right: 6px;"></i> Evidence Registry</h3>
+                    <span>{{ evidences.count }} total evidence file{{ evidences.count|pluralize }}</span>
+                </div>
                 <table>
                     <thead>
                         <tr>
-                            <th width="25%">Evidence Asset</th>
-                            <th width="35%">Original Collection Hash</th>
-                            <th width="25%">Last System Hash</th>
+                            <th width="5%">#</th>
+                            <th width="20%">Evidence Asset</th>
+                            <th width="30%">Original Collection Hash</th>
+                            <th width="30%">Current System Hash</th>
                             <th width="15%">Integrity</th>
                         </tr>
                     </thead>
@@ -137,21 +238,20 @@
                         {% if results %}
                             {% for item in results %}
                             <tr>
+                                <td><b>{{ forloop.counter }}</b></td>
                                 <td>
-                                    <b>{{ item.evidence.file_name }}</b><br>
-                                    <small>Case: {{ item.evidence.case.case_id }}</small>
+                                    <div class="evidence-name">{{ item.evidence.file_name }}</div>
+                                    <div class="evidence-case">Case: {{ item.evidence.case.case_id }}</div>
+                                    <div class="evidence-case">Type: {{ item.evidence.file_type }}</div>
                                 </td>
                                 <td>
                                     <span class="hash-box">
-                                        {{ item.original_hash|slice:":20" }}...
+                                        {{ item.original_hash }}
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="hash-box"
-                                        {% if not item.is_valid %}
-                                            style="color: var(--danger);"
-                                        {% endif %}>
-                                        {{ item.current_hash|slice:":20" }}...
+                                    <span class="hash-box {% if not item.is_valid %}hash-mismatch{% endif %}">
+                                        {{ item.current_hash }}
                                     </span>
                                 </td>
                                 <td>
@@ -169,31 +269,20 @@
                             {% endfor %}
                         {% else %}
                             <tr>
-                                <td colspan="4" style="text-align:center;">
-                                    No scan executed yet.
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class='bx bx-shield-quarter'></i>
+                                        <h3>No Scan Results</h3>
+                                        <p>Click "Run Global Integrity Check" above to verify all evidence assets.</p>
+                                    </div>
                                 </td>
                             </tr>
                         {% endif %}
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
-    <script>
-        function runIntegrityScan() {
-            const overlay = document.getElementById('scanOverlay');
 
-            // Show animation
-            overlay.style.display = 'flex';
-
-            // Delay 2.5 seconds before real submit
-            setTimeout(() => {
-                overlay.style.opacity = "0";
-                setTimeout(() => {
-                    document.getElementById('scanForm').submit();
-                }, 500);
-            }, 5000);
-        }
-    </script>
 </body>
 </html>
