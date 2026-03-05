@@ -8,6 +8,8 @@ class CustodyLog(models.Model):
 
     ACTION_CHOICES = [
         ("UPLOAD", "Evidence Uploaded"),
+        ("PREVIEW", "Evidence Previewed"),
+        ("COMMENT", "Evidence Commented"),
         ("VIEW", "Evidence Viewed"),
         ("VERIFY", "Evidence Verified"),
         ("DOWNLOAD", "Evidence Downloaded"),

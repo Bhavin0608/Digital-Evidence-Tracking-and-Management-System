@@ -23,7 +23,7 @@ def preview_evidence(request, evidence_id):
         case=evidence.case,
         evidence=evidence,
         performed_by=request.user,
-        action_type="VIEW",
+        action_type="PREVIEW",
         remarks="Evidence file previewed."
     )
 
@@ -214,7 +214,7 @@ def observations(request):
                 case=selected_evidence.case,
                 evidence=selected_evidence,
                 performed_by=user,
-                action_type="VIEW",
+                action_type="COMMENT",
                 remarks=f"Observation added: {content[:80]}",
             )
             # Redirect to same page to avoid re-post on refresh
