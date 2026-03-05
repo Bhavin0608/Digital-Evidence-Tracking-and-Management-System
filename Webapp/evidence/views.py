@@ -1,9 +1,8 @@
-from unittest import case
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from cases.models import Case, CaseMember
-from .models import Evidence
+from .models import Evidence, EvidenceNote
 from .forms import EvidenceUploadForm
 from core.hash_service import HashService
 from core.rbac_service import RBACService
@@ -164,4 +163,67 @@ def upload_evidence(request):
 
     return render(request, "evidence/upload.html", {
         "cases": assigned_cases
+    })
+
+
+# ======================== OBSERVATIONS PAGE ========================
+
+@login_required
+def observations(request):
+    """Observations page — select case → see evidence → select evidence → view/add notes."""
+    user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins are not allowed to access this page.")
+
+    if user.profile.role != "INVESTIGATOR":
+        return HttpResponseForbidden("Access denied.")
+
+    # Cases assigned to this investigator
+    assigned_cases = Case.objects.filter(members__user=user)
+
+    selected_case = None
+    evidences = None
+    selected_evidence = None
+    notes = None
+
+    # ---- Case selection via GET ----
+    case_id = request.GET.get("case_id")
+    if case_id:
+        selected_case = get_object_or_404(Case, id=case_id)
+        if not RBACService.can_access_case(user, selected_case):
+            return HttpResponseForbidden("Access denied.")
+        evidences = Evidence.objects.filter(case=selected_case).order_by("-uploaded_at")
+
+    # ---- Evidence selection via GET ----
+    evidence_id = request.GET.get("evidence_id")
+    if evidence_id and selected_case:
+        selected_evidence = get_object_or_404(Evidence, id=evidence_id, case=selected_case)
+        notes = EvidenceNote.objects.filter(evidence=selected_evidence).select_related("author")
+
+    # ---- Post a new note via POST ----
+    if request.method == "POST" and selected_evidence:
+        content = request.POST.get("content", "").strip()
+        if content:
+            EvidenceNote.objects.create(
+                evidence=selected_evidence,
+                author=user,
+                content=content,
+            )
+            CustodyLog.objects.create(
+                case=selected_evidence.case,
+                evidence=selected_evidence,
+                performed_by=user,
+                action_type="VIEW",
+                remarks=f"Observation added: {content[:80]}",
+            )
+            # Redirect to same page to avoid re-post on refresh
+            return redirect(f"/evidence/observations/?case_id={selected_case.id}&evidence_id={selected_evidence.id}")
+
+    return render(request, "evidence/observations.html", {
+        "cases": assigned_cases,
+        "selected_case": selected_case,
+        "evidences": evidences,
+        "selected_evidence": selected_evidence,
+        "notes": notes,
     })

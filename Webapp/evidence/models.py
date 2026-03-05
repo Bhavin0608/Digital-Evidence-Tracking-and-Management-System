@@ -36,3 +36,33 @@ class Evidence(models.Model):
 
     def __str__(self):
         return f"{self.file_name} ({self.case.case_id})"
+
+
+class EvidenceNote(models.Model):
+    """Observation / comment attached to a specific evidence item."""
+
+    evidence = models.ForeignKey(
+        Evidence,
+        on_delete=models.CASCADE,
+        related_name="notes"
+    )
+
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="evidence_notes"
+    )
+
+    content = models.TextField(
+        help_text="Observation or comment text"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = "Evidence Note"
+        verbose_name_plural = "Evidence Notes"
+
+    def __str__(self):
+        return f"Note by {self.author.username} on {self.evidence.file_name}"

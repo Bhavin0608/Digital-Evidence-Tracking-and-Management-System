@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observations | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #0284c7;    
+            --secondary: #0ea5e9;  
+            --bg-light: #f8fafc;   
+            --text-dark: #0f172a;  
+            --text-muted: #64748b; 
+            --border: #e2e8f0;     
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--secondary); background: rgba(14, 165, 233, 0.08); }
+        .nav-links a.active { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .content-area { flex: 1; padding: 40px; max-width: 1100px; margin: 0 auto; width: 100%; }
+        
+        .page-header { margin-bottom: 30px; }
+        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.8px; }
+
+        /* --- SELECTION BOX --- */
+        .selection-panel {
+            background: var(--white); padding: 25px; border-radius: 20px;
+            display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end;
+            margin-bottom: 30px; border: 1px solid var(--border);
+        }
+
+        .select-group { display: flex; flex-direction: column; gap: 8px; }
+        .select-group label { font-size: 0.75rem; font-weight: 800; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; }
+        
+        select {
+            padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+            background: #f8fafc; font-weight: 600; outline: none; transition: 0.3s;
+        }
+        select:focus { border-color: var(--primary); background: #fff; }
+
+        .btn-select {
+            background: var(--primary); color: white; border: none; padding: 12px 24px;
+            border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.85rem;
+        }
+        .btn-select:hover { background: #0369a1; }
+
+        header {
+            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .badge-role { background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+
+        /* --- CASE STATUS BAR --- */
+        .case-status-bar {
+            background: var(--white); padding: 15px 25px; border-radius: 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 25px; border: 1px solid var(--border);
+        }
+        .case-status-bar .case-title { font-weight: 800; font-size: 0.95rem; color: var(--text-dark); }
+        .status-badge {
+            padding: 5px 14px; border-radius: 8px; font-size: 0.7rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .status-badge.open { background: #dcfce7; color: #166534; }
+        .status-badge.in_progress { background: #dbeafe; color: #1e40af; }
+        .status-badge.pending_closure { background: #fef3c7; color: #92400e; }
+        .status-badge.closed { background: #f3f4f6; color: #374151; }
+
+        /* --- TWO COLUMN LAYOUT --- */
+        .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+
+        /* --- EVIDENCE LIST --- */
+        .evidence-list-card {
+            background: var(--white); border-radius: 20px; padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); height: fit-content;
+        }
+        .list-title { font-size: 0.9rem; font-weight: 800; margin-bottom: 15px; color: var(--text-dark); border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        
+        .evidence-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            border-radius: 12px; transition: 0.2s; margin-bottom: 8px;
+            border: 1px solid transparent; text-decoration: none; color: inherit;
+        }
+        .evidence-item:hover { background: #f1f5f9; }
+        .evidence-item.active { background: #f0f9ff; border-color: var(--primary); }
+
+        .file-icon-small { font-size: 1.5rem; color: var(--primary); }
+        .file-meta-small { flex: 1; }
+        .file-meta-small b { display: block; font-size: 0.85rem; color: var(--text-dark); }
+        .file-meta-small span { font-size: 0.7rem; color: var(--text-muted); font-family: monospace; }
+
+        /* --- EVIDENCE ACTIONS --- */
+        .evidence-actions {
+            display: flex; gap: 6px;
+        }
+        .evidence-actions a {
+            display: grid; place-items: center;
+            width: 30px; height: 30px; border-radius: 8px;
+            color: var(--text-muted); transition: 0.2s;
+            text-decoration: none; font-size: 1rem;
+        }
+        .evidence-actions a:hover { background: var(--primary); color: var(--white); }
+
+        /* --- COMMENT SECTION --- */
+        .comment-panel {
+            background: var(--white); border-radius: 20px; padding: 30px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        }
+
+        .comment-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+        .comment-header h3 { font-size: 1.1rem; font-weight: 800; }
+        .comment-header .hash { font-family: monospace; font-size: 0.7rem; color: var(--text-muted); word-break: break-all; }
+
+        .thread { max-height: 400px; overflow-y: auto; margin-bottom: 25px; padding-right: 10px; }
+        .note { margin-bottom: 20px; display: flex; gap: 12px; }
+        .note img { width: 35px; height: 35px; border-radius: 50%; }
+        .note-content { background: #f8fafc; padding: 12px 15px; border-radius: 0 15px 15px 15px; flex: 1; }
+        .note-user { font-size: 0.8rem; font-weight: 800; display: block; margin-bottom: 4px; }
+        .note-time { font-size: 0.65rem; color: var(--text-muted); margin-left: 8px; font-weight: 400; }
+        .note-text { font-size: 0.85rem; color: #475569; line-height: 1.4; }
+
+        .input-area { position: relative; }
+        textarea {
+            width: 100%; padding: 15px; background: #f1f5f9; border: 1px solid var(--border);
+            border-radius: 12px; font-size: 0.9rem; outline: none; resize: none;
+            font-family: 'Manrope', sans-serif;
+        }
+        textarea:focus { border-color: var(--primary); background: var(--white); }
+        .btn-post {
+            background: var(--primary); color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; float: right;
+            transition: 0.2s;
+        }
+        .btn-post:hover { background: #0369a1; }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 20px;
+        }
+
+        /* --- FOOTER --- */
+        .site-footer { padding: 25px; background: var(--white); text-align: center; border-top: 1px solid var(--border); margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'investigator_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="#"><i class='bx bxs-edit-alt'></i> Case Notes</a></li>
+            <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i> Add Evidence</a></li>
+            <li><a href="{% url 'observations' %}" class="active"><i class='bx bxs-comment-detail'></i> Observations</a></li>
+            <li style="margin-top: auto;"><a href="{% url 'logout' %}" style="color: #f87171;"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <header>
+            <span style="font-weight: 700; color: var(--text-muted);">Field Investigation Portal</span>
+            <div class="user-profile">
+                <span class="badge-role">INVESTIGATOR</span>
+                <a href="{% url 'profile' %}">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=0284c7&color=fff" alt="User">
+                </a>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h2>Audit Collaboration Portal</h2>
+                <p style="color: var(--text-muted);">Select an assigned case to review and comment on forensic assets.</p>
+            </div>
+
+            <!-- ========== CASE SELECTOR (form GET) ========== -->
+            <form method="GET" action="{% url 'observations' %}">
+                <div class="selection-panel">
+                    <div class="select-group">
+                        <label>Select Assigned Case</label>
+                        <select name="case_id">
+                            <option value="" disabled {% if not selected_case %}selected{% endif %}>Choose Case...</option>
+                            {% for case in cases %}
+                            <option value="{{ case.id }}" {% if selected_case and selected_case.id == case.id %}selected{% endif %}>
+                                {{ case.case_id }}: {{ case.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-select"><i class='bx bx-search-alt'></i> Load</button>
+                </div>
+            </form>
+
+            {% if selected_case %}
+            <!-- ========== CASE STATUS ========== -->
+            <div class="case-status-bar">
+                <span class="case-title">{{ selected_case.case_id }} — {{ selected_case.title }}</span>
+                <span class="status-badge {{ selected_case.status|lower }}">{{ selected_case.get_status_display }}</span>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- ========== LEFT: Evidence List ========== -->
+                <div class="evidence-list-card">
+                    <div class="list-title">Linked Evidence ({{ evidences.count }})</div>
+
+                    {% if evidences %}
+                        {% for ev in evidences %}
+                        <a href="{% url 'observations' %}?case_id={{ selected_case.id }}&evidence_id={{ ev.id }}"
+                           class="evidence-item {% if selected_evidence and selected_evidence.id == ev.id %}active{% endif %}">
+
+                            <!-- Icon based on file type -->
+                            {% if 'pdf' in ev.file_type %}
+                                <i class='bx bxs-file-pdf file-icon-small'></i>
+                            {% elif 'image' in ev.file_type %}
+                                <i class='bx bxs-image file-icon-small'></i>
+                            {% elif 'video' in ev.file_type %}
+                                <i class='bx bxs-video file-icon-small'></i>
+                            {% elif 'audio' in ev.file_type %}
+                                <i class='bx bxs-music file-icon-small'></i>
+                            {% elif 'zip' in ev.file_type or 'rar' in ev.file_type %}
+                                <i class='bx bxs-file-archive file-icon-small'></i>
+                            {% elif 'word' in ev.file_type or 'document' in ev.file_type %}
+                                <i class='bx bxs-file-doc file-icon-small'></i>
+                            {% elif 'spreadsheet' in ev.file_type or 'csv' in ev.file_type or 'excel' in ev.file_type %}
+                                <i class='bx bx-spreadsheet file-icon-small'></i>
+                            {% else %}
+                                <i class='bx bx-file file-icon-small'></i>
+                            {% endif %}
+
+                            <div class="file-meta-small">
+                                <b>{{ ev.file_name }}</b>
+                                <span>{{ ev.sha256_hash|truncatechars:18 }}</span>
+                            </div>
+
+                            <div class="evidence-actions">
+                                <a href="{% url 'preview_evidence' ev.id %}" target="_blank" title="Preview" onclick="event.stopPropagation()">
+                                    <i class='bx bx-show'></i>
+                                </a>
+                                <a href="{% url 'download_evidence' ev.id %}" title="Download" onclick="event.stopPropagation()">
+                                    <i class='bx bx-download'></i>
+                                </a>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="empty-state">No evidence found for this case.</p>
+                    {% endif %}
+                </div>
+
+                <!-- ========== RIGHT: Notes Panel ========== -->
+                {% if selected_evidence %}
+                <div class="comment-panel">
+                    <div class="comment-header">
+                        <h3>{{ selected_evidence.file_name }}</h3>
+                        <div class="hash">SHA256: {{ selected_evidence.sha256_hash }}</div>
+                    </div>
+
+                    <div class="thread">
+                        <!-- System audit note -->
+                        <div class="note">
+                            <img src="https://ui-avatars.com/api/?name=SYS&background=f1f5f9&color=475569" alt="System">
+                            <div class="note-content">
+                                <span class="note-user">System Audit</span>
+                                <p class="note-text">Audit trail opened for <b>{{ selected_evidence.file_name }}</b>.</p>
+                            </div>
+                        </div>
+
+                        {% if notes %}
+                            {% for note in notes %}
+                            <div class="note">
+                                <img src="https://ui-avatars.com/api/?name={{ note.author.first_name }}+{{ note.author.last_name }}&background=0284c7&color=fff" alt="{{ note.author.username }}">
+                                <div class="note-content">
+                                    <span class="note-user">
+                                        {{ note.author.get_full_name|default:note.author.username }}
+                                        <span class="note-time">{{ note.created_at|date:"d M Y, h:i A" }}</span>
+                                    </span>
+                                    <p class="note-text">{{ note.content }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="empty-state" style="margin-top: 10px;">No observations yet. Be the first to add one.</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Post new note (form POST) -->
+                    <form method="POST" action="{% url 'observations' %}?case_id={{ selected_case.id }}&evidence_id={{ selected_evidence.id }}">
+                        {% csrf_token %}
+                        <div class="input-area">
+                            <textarea name="content" rows="3" placeholder="Add an official observation to this asset..." required></textarea>
+                            <button type="submit" class="btn-post">Post Note <i class='bx bx-send'></i></button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </form>
+                </div>
+                {% else %}
+                <div class="comment-panel">
+                    <p class="empty-state" style="padding: 60px 20px;">
+                        <i class='bx bx-left-arrow-alt' style="font-size: 1.5rem; display: block; margin-bottom: 10px;"></i>
+                        Select an evidence item from the list to view and add observations.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            {% else %}
+            <!-- No case selected yet -->
+            <div style="background: var(--white); border-radius: 20px; padding: 60px; text-align: center; border: 1px solid var(--border);">
+                <i class='bx bxs-folder-open' style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <p style="color: var(--text-muted); font-weight: 600;">Select a case above to view linked evidence and observations.</p>
+            </div>
+            {% endif %}
+        </main>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 EvidenceLock | Immutable Forensic Records</p>
+        </footer>
+    </div>
+
+</body>
+</html>
