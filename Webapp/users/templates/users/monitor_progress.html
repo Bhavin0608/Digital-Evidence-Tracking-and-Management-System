@@ -12,14 +12,14 @@
 
     <style>
         :root {
-            --deep: #0b132b;    /* Deep Navy */
+            --deep: #000000;    /* Deep Navy */
             --blush: #5bc0be;   /* Tech Cyan */
             --sand: #f1f4f9;    /* Light Steel */
             --muted: #4a5568;   /* Slate Grey */
             --mauve: #9a8c98;   /* Muted Purple */
             --white: #ffffff;
-            --warning: #ffb703; /* Amber */
-            --danger: #e63946;  /* High Alert Red */
+            --warning: #f14f4f; /* Amber */
+            --success: #38b000; /* Green */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -108,14 +108,14 @@
 
         /* --- CASE SELECTOR TERMINAL --- */
         .selector-terminal {
-            background: var(--deep); color: var(--white); padding: 25px 40px; border-radius: 30px;
+            background: var(--white);  padding: 25px 40px; border-radius: 30px;
             display: flex; align-items: center; gap: 25px; margin-bottom: 30px;
             box-shadow: 0 20px 40px rgba(11, 19, 43, 0.1);
         }
         .selector-terminal label { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--blush); letter-spacing: 2px; }
         .selector-terminal select {
             flex: 1; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--white); padding: 12px 20px; border-radius: 15px; font-family: 'Plus Jakarta Sans';
+            color: var(--deep); padding: 12px 20px; border-radius: 15px; font-family: 'Plus Jakarta Sans';
             font-weight: 600; outline: none; cursor: pointer; transition: 0.3s;
         }
         .selector-terminal select:focus { border-color: var(--blush); }
