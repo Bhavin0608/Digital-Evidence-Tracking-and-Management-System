@@ -240,7 +240,7 @@
         <div class="nav-brand"><i class="fa-solid fa-bars" style="color: white;"></i></div>
         <ul class="nav-links">
             <li><a href="#" class="active"><i class='bx bxs-grid-alt'></i><span>Dashboard</span></a></li>
-            <li><a href="#"><i class='bx bxs-edit-alt'></i><span>Update Details</span></a></li>
+            <li><a href="{% url 'update_case_notes' %}"><i class='bx bxs-edit-alt'></i><span>Update Details</span></a></li>
             <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i><span>Upload Evidence</span></a></li>
             <li><a href="{% url 'observations' %}"><i class='bx bxs-comment-detail'></i><span>Observations</span></a></li>
             <li><a href="{% url 'logout' %}" style="color: var(--warning);"><i class='bx bx-power-off'></i><span>Logout</span></a></li>
@@ -271,7 +271,7 @@
                 <h2>Update Case Notes</h2>
                 <div class="card-content">
                     <p style="color: rgba(255,255,255,0.6); line-height: 1.8; margin-bottom: 40px;">Document daily findings, technical forensic progress, and specific case-related field details within the secure journal.</p>
-                    <a href="#" class="btn-premium">Update Journal <i class='bx bx-right-arrow-alt'></i></a>
+                    <a href="{% url 'update_case_notes' %}" class="btn-premium">Update Journal <i class='bx bx-right-arrow-alt'></i></a>
                 </div>
                 <div class="card-index">01</div>
             </div>

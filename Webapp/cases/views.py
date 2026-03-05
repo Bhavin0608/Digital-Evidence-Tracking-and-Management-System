@@ -1,7 +1,7 @@
 from unittest import case
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Case
+from .models import Case, CaseMember
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 from custody.models import CustodyLog
@@ -67,4 +67,79 @@ def request_closure(request):
 
     return render(request, "cases/request_closure.html", {
         "cases": cases
+    })
+
+
+@login_required
+def update_case_notes(request):
+    """Investigator selects an assigned case, updates title/description/priority."""
+    user = request.user
+
+    if user.is_superuser:
+        return HttpResponseForbidden("Admins are not allowed to access this page.")
+
+    if user.profile.role != "INVESTIGATOR":
+        return HttpResponseForbidden("Access denied.")
+
+    # Cases assigned to this investigator
+    assigned_cases = Case.objects.filter(members__user=user)
+
+    selected_case = None
+    success = False
+
+    # ---- Case selection via GET ----
+    case_id = request.GET.get("case_id")
+    if case_id:
+        selected_case = get_object_or_404(Case, id=case_id)
+        # Verify assignment
+        if not CaseMember.objects.filter(case=selected_case, user=user).exists():
+            return HttpResponseForbidden("You are not assigned to this case.")
+
+    # ---- Update via POST ----
+    if request.method == "POST":
+        case_id = request.POST.get("case_id")
+        selected_case = get_object_or_404(Case, id=case_id)
+
+        if not CaseMember.objects.filter(case=selected_case, user=user).exists():
+            return HttpResponseForbidden("You are not assigned to this case.")
+
+        # Only update allowed fields
+        new_title = request.POST.get("title", "").strip()
+        new_description = request.POST.get("description", "").strip()
+        new_priority = request.POST.get("priority", "").strip()
+
+        changes = []
+
+        if new_title and new_title != selected_case.title:
+            selected_case.title = new_title
+            changes.append("title")
+
+        if new_description and new_description != selected_case.description:
+            selected_case.description = new_description
+            changes.append("description")
+
+        if new_priority in dict(Case.PRIORITY_CHOICES) and new_priority != selected_case.priority:
+            selected_case.priority = new_priority
+            changes.append("priority")
+
+        if changes:
+            selected_case.save()
+            CustodyLog.objects.create(
+                case=selected_case,
+                performed_by=user,
+                action_type="CASE_UPDATE",
+                remarks=f"Case updated by investigator. Fields changed: {', '.join(changes)}",
+            )
+            success = True
+
+        # Redirect to avoid re-post
+        if success:
+            return redirect(f"/cases/update_notes/?case_id={selected_case.id}&updated=1")
+
+    updated = request.GET.get("updated") == "1"
+
+    return render(request, "cases/update_case_notes.html", {
+        "cases": assigned_cases,
+        "selected_case": selected_case,
+        "updated": updated,
     })

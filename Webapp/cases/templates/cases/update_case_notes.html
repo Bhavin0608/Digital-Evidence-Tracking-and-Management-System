@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Case | EvidenceLock</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+        :root {
+            --primary: #0284c7;    
+            --secondary: #0ea5e9;  
+            --bg-light: #f8fafc;   
+            --text-dark: #0f172a;  
+            --text-muted: #64748b; 
+            --border: #e2e8f0;     
+            --white: #ffffff;
+            --warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: var(--bg-light); display: flex; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 280px; background: var(--text-dark); color: white; padding: 30px 20px;
+            display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 10;
+        }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 1.5rem; font-weight: 800; margin-bottom: 50px; }
+        .logo i { color: var(--secondary); font-size: 2rem; }
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a {
+            display: flex; align-items: center; gap: 15px; color: #94a3b8; text-decoration: none;
+            padding: 12px 15px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+        }
+        .nav-links a:hover { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+        .nav-links a.active { background: rgba(14, 165, 233, 0.1); color: var(--secondary); }
+
+        /* --- MAIN WRAPPER --- */
+        .main-wrapper { margin-left: 280px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .content-area { flex: 1; padding: 40px; max-width: 900px; margin: 0 auto; width: 100%; }
+        
+        .page-header { margin-bottom: 35px; }
+        .page-header h2 { font-size: 1.8rem; font-weight: 800; color: var(--text-dark); letter-spacing: -0.8px; }
+
+        .alert-info {
+            background: #fffbeb; border: 1px solid #fef3c7; color: #92400e;
+            padding: 12px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;
+            margin-top: 15px; display: flex; align-items: center; gap: 10px;
+        }
+
+        .alert-success {
+            background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534;
+            padding: 12px 18px; border-radius: 12px; font-size: 0.85rem; font-weight: 600;
+            margin-top: 15px; display: flex; align-items: center; gap: 10px;
+        }
+
+        header {
+            background: var(--white); padding: 20px 40px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-profile img { width: 40px; border-radius: 50%; border: 2px solid var(--primary); }
+        .badge-role { background: #eef2ff; color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; }
+
+        /* --- CASE SELECTOR --- */
+        .selection-panel {
+            background: var(--white); padding: 25px; border-radius: 20px;
+            display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: end;
+            margin-bottom: 30px; border: 1px solid var(--border);
+        }
+
+        .select-group { display: flex; flex-direction: column; gap: 8px; }
+        .select-group label { 
+            font-size: 0.72rem; font-weight: 800; color: var(--text-dark); 
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        select {
+            padding: 14px 18px; background: #f8fafc; border: 1px solid var(--border);
+            border-radius: 12px; font-size: 0.95rem; font-weight: 600; transition: 0.3s;
+        }
+        select:focus { border-color: var(--primary); background: #fff; }
+
+        .btn-select {
+            background: var(--primary); color: white; border: none; padding: 14px 24px;
+            border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 0.85rem;
+        }
+        .btn-select:hover { background: #0369a1; }
+
+        /* --- FORM CARD --- */
+        .edit-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        }
+
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .full-width { grid-column: span 2; }
+
+        .input-group { display: flex; flex-direction: column; margin-bottom: 20px; }
+        .input-group label { 
+            font-size: 0.72rem; font-weight: 800; color: var(--text-dark); 
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        }
+
+        input, textarea {
+            padding: 14px 18px; background: #f8fafc; border: 1px solid var(--border);
+            border-radius: 12px; font-size: 0.95rem; font-weight: 600; transition: 0.3s;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        input:focus, textarea:focus {
+            outline: none; border-color: var(--primary); background: #fff;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
+        }
+
+        /* --- READ ONLY STYLING --- */
+        .readonly-field {
+            background: #f1f5f9 !important;
+            color: var(--text-muted);
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+
+        .readonly-tag {
+            font-size: 0.65rem; background: #e2e8f0; color: #475569;
+            padding: 2px 8px; border-radius: 4px; margin-left: 10px; vertical-align: middle;
+        }
+
+        /* --- BUTTONS --- */
+        .btn-container { display: flex; gap: 15px; margin-top: 30px; }
+        .btn {
+            flex: 1; padding: 16px; border-radius: 12px; font-weight: 700;
+            font-size: 0.95rem; cursor: pointer; transition: 0.3s; border: none;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            text-decoration: none;
+        }
+        .btn-update { background: var(--primary); color: white; }
+        .btn-update:hover { background: #0369a1; transform: translateY(-2px); box-shadow: 0 10px 15px rgba(2, 132, 199, 0.2); }
+        .btn-cancel { background: #f1f5f9; color: var(--text-dark); }
+        .btn-cancel:hover { background: #e2e8f0; }
+
+        /* --- EMPTY STATE --- */
+        .empty-state {
+            background: var(--white); border-radius: 20px; padding: 60px; text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        /* --- FOOTER --- */
+        .site-footer { padding: 25px; background: var(--white); text-align: center; border-top: 1px solid var(--border); margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo"><i class='bx bxs-shield-alt-2'></i><span>EvidenceLock</span></div>
+        <ul class="nav-links">
+            <li><a href="{% url 'investigator_dashboard' %}"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="{% url 'update_case_notes' %}" class="active"><i class='bx bxs-edit-alt'></i> Case Notes</a></li>
+            <li><a href="{% url 'upload_evidence' %}"><i class='bx bxs-file-plus'></i> Add Evidence</a></li>
+            <li><a href="{% url 'observations' %}"><i class='bx bxs-comment-detail'></i> Observations</a></li>
+            <li style="margin-top: auto;"><a href="{% url 'logout' %}" style="color: #f87171;"><i class='bx bxs-log-out-circle'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <div class="main-wrapper">
+        <header>
+            <span style="font-weight: 700; color: var(--text-muted);">Field Investigation Portal</span>
+            <div class="user-profile">
+                <span class="badge-role">INVESTIGATOR</span>
+                <a href="{% url 'profile' %}">
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=0284c7&color=fff" alt="User">
+                </a>
+            </div>
+        </header>
+
+        <main class="content-area">
+            <div class="page-header">
+                <h2>Update Case Details</h2>
+                <div class="alert-info">
+                    <i class='bx bxs-info-circle'></i>
+                    Core forensic metadata (ID, Category, and Creator) is locked to preserve investigation integrity.
+                </div>
+
+                {% if updated %}
+                <div class="alert-success">
+                    <i class='bx bxs-check-circle'></i>
+                    Case details updated successfully. Modifications logged in Audit Registry.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- ========== CASE SELECTOR ========== -->
+            <form method="GET" action="{% url 'update_case_notes' %}">
+                <div class="selection-panel">
+                    <div class="select-group">
+                        <label>Select Assigned Case</label>
+                        <select name="case_id">
+                            <option value="" disabled {% if not selected_case %}selected{% endif %}>Choose Case...</option>
+                            {% for case in cases %}
+                            <option value="{{ case.id }}" {% if selected_case and selected_case.id == case.id %}selected{% endif %}>
+                                {{ case.case_id }}: {{ case.title }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-select"><i class='bx bx-search-alt'></i> Load</button>
+                </div>
+            </form>
+
+            {% if selected_case %}
+            <!-- ========== EDIT FORM ========== -->
+            <div class="edit-card">
+                <form method="POST" action="{% url 'update_case_notes' %}?case_id={{ selected_case.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="case_id" value="{{ selected_case.id }}">
+
+                    <div class="input-grid">
+                        <!-- LOCKED: Case ID -->
+                        <div class="input-group">
+                            <label>Case ID <span class="readonly-tag">LOCKED</span></label>
+                            <input type="text" class="readonly-field" value="{{ selected_case.case_id }}" readonly>
+                        </div>
+
+                        <!-- LOCKED: Category -->
+                        <div class="input-group">
+                            <label>Category <span class="readonly-tag">LOCKED</span></label>
+                            <input type="text" class="readonly-field" value="{{ selected_case.get_category_display }}" readonly>
+                        </div>
+
+                        <!-- EDITABLE: Title -->
+                        <div class="input-group full-width">
+                            <label>Case Title / Name</label>
+                            <input type="text" name="title" value="{{ selected_case.title }}" required>
+                        </div>
+
+                        <!-- EDITABLE: Description -->
+                        <div class="input-group full-width">
+                            <label>Update Investigation Description</label>
+                            <textarea name="description" rows="5" required>{{ selected_case.description }}</textarea>
+                        </div>
+
+                        <!-- EDITABLE: Priority -->
+                        <div class="input-group full-width">
+                            <label>Priority Level</label>
+                            <select name="priority">
+                                {% for value, label in selected_case.PRIORITY_CHOICES %}
+                                <option value="{{ value }}" {% if selected_case.priority == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- LOCKED: Assigned Senior Officer -->
+                        <div class="input-group full-width">
+                            <label>Primary Officer In-Charge <span class="readonly-tag">LOCKED</span></label>
+                            <input type="text" class="readonly-field"
+                                   value="{{ selected_case.assigned_so.get_full_name|default:selected_case.assigned_so.username }}"
+                                   readonly>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <a href="{% url 'update_case_notes' %}" class="btn btn-cancel">Cancel Changes</a>
+                        <button type="submit" class="btn btn-update">
+                            Apply Updates <i class='bx bx-check-double'></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {% else %}
+            <!-- No case selected -->
+            <div class="empty-state">
+                <i class='bx bxs-folder-open' style="font-size: 3rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <p style="color: var(--text-muted); font-weight: 600;">Select a case above to update its details.</p>
+            </div>
+            {% endif %}
+        </main>
+
+        <footer class="site-footer">
+            <p class="copyright">&copy; 2026 EvidenceLock Digital Tracking System. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
