@@ -116,18 +116,18 @@ def upload_evidence(request):
     if user.profile.role != "INVESTIGATOR":
         return HttpResponseForbidden("Access denied.")
 
-    # Fetch only cases assigned to this investigator
+    # Fetch only OPEN cases assigned to this investigator (exclude closed/pending)
     assigned_cases = Case.objects.filter(
         members__user=request.user
-    )
+    ).exclude(status__in=["CLOSED", "PENDING_CLOSURE"])
 
     if request.method == "POST":
 
         case_id = request.POST.get("case_id")
         case = get_object_or_404(Case, id=case_id)
 
-        # if case.status != "IN_PROGRESS":
-        #     return HttpResponseForbidden("Case is locked.")
+        if case.status in ("CLOSED", "PENDING_CLOSURE"):
+            return HttpResponseForbidden("This case is closed and no longer accepts evidence.")
 
         # RBAC check
         if not CaseMember.objects.filter(
@@ -182,8 +182,8 @@ def observations(request):
     if user.profile.role != "INVESTIGATOR":
         return HttpResponseForbidden("Access denied.")
 
-    # Cases assigned to this investigator
-    assigned_cases = Case.objects.filter(members__user=user)
+    # Cases assigned to this investigator (exclude closed)
+    assigned_cases = Case.objects.filter(members__user=user).exclude(status="CLOSED")
 
     selected_case = None
     evidences = None
@@ -206,6 +206,8 @@ def observations(request):
 
     # ---- Post a new note via POST ----
     if request.method == "POST" and selected_evidence:
+        if selected_case.status == "CLOSED":
+            return HttpResponseForbidden("This case is closed. No new observations can be added.")
         content = request.POST.get("content", "").strip()
         if content:
             EvidenceNote.objects.create(

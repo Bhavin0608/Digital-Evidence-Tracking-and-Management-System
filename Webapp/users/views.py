@@ -1,4 +1,5 @@
 from datetime import date
+from unittest import case
 from django.http import HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
@@ -197,7 +198,7 @@ def assign_investigators(request):
     # Fetch only cases assigned to this SO
     cases = Case.objects.filter(
         assigned_so=user
-    )
+    ).exclude(status__in=["CLOSED", "PENDING_CLOSURE"])
 
     investigators = User.objects.filter(
         profile__role="INVESTIGATOR"
@@ -212,6 +213,9 @@ def assign_investigators(request):
         )
 
         case = Case.objects.get(id=case_id)
+
+        if case.status in ("CLOSED", "PENDING_CLOSURE"):
+            return HttpResponseForbidden("This case is closed and no longer accepts evidence.")
 
         for inv_id in investigator_ids:
 
@@ -247,7 +251,7 @@ def monitor_progress(request):
     # Only cases assigned to this SO
     cases = Case.objects.filter(
         assigned_so=request.user
-    )
+    ).exclude(status__in=["CLOSED", "PENDING_CLOSURE"])
 
     selected_case = None
     evidences = None
@@ -260,6 +264,9 @@ def monitor_progress(request):
 
     if case_id:
         selected_case = Case.objects.get(id=case_id)
+
+        if selected_case.status in ("CLOSED", "PENDING_CLOSURE"):
+            return HttpResponseForbidden("This case is closed and no longer accepts evidence.")
 
         evidences = Evidence.objects.filter(
             case=selected_case

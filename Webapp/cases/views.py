@@ -81,8 +81,8 @@ def update_case_notes(request):
     if user.profile.role != "INVESTIGATOR":
         return HttpResponseForbidden("Access denied.")
 
-    # Cases assigned to this investigator
-    assigned_cases = Case.objects.filter(members__user=user)
+    # Cases assigned to this investigator (exclude closed cases)
+    assigned_cases = Case.objects.filter(members__user=user).exclude(status="CLOSED")
 
     selected_case = None
     success = False
@@ -102,6 +102,9 @@ def update_case_notes(request):
 
         if not CaseMember.objects.filter(case=selected_case, user=user).exists():
             return HttpResponseForbidden("You are not assigned to this case.")
+
+        if selected_case.status == "CLOSED":
+            return HttpResponseForbidden("This case is closed and cannot be updated.")
 
         # Only update allowed fields
         new_title = request.POST.get("title", "").strip()
