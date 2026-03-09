@@ -28,7 +28,6 @@
 - [URL Reference](#url-reference)
 - [Security](#security)
 - [Project Structure](#project-structure)
-- [Screenshots](#screenshots)
 
 ---
 
