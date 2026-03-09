@@ -18,9 +18,18 @@ class DETAMSAdminSite(AdminSite):
         ).count()
         extra_context["total_evidence"] = Evidence.objects.count()
         extra_context["total_logs"] = CustodyLog.objects.count()
-        extra_context["recent_logs"] = (
+
+        logs_qs = (
             CustodyLog.objects
             .select_related("case", "evidence", "performed_by")
-            .order_by("-timestamp")[:10]
+            .order_by("-timestamp")
         )
+
+        filter_case_id = request.GET.get("case")
+        if filter_case_id:
+            logs_qs = logs_qs.filter(case__id=filter_case_id)
+        extra_context["recent_logs"] = logs_qs[:20]
+        extra_context["all_cases"] = Case.objects.order_by("case_id")
+        extra_context["selected_case"] = filter_case_id or ""
+
         return super().index(request, extra_context=extra_context)

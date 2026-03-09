@@ -118,6 +118,26 @@
     }
     .action-card:hover .card-arrow { opacity: 1; transform: translateX(5px); }
 
+    /* ===== CASE FILTER ===== */
+    .case-filter-bar {
+        display: flex; align-items: center; gap: 12px;
+    }
+    .case-filter-bar select {
+        font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+        padding: 7px 14px; 
+        border-radius: 50px;
+        border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.9);
+        color: #000; cursor: pointer; outline: none;
+        transition: border-color 0.3s;
+    }
+    .case-filter-bar select:focus { border-color: #5bc0be; }
+    .case-filter-bar .filter-clear {
+        font-family: 'JetBrains Mono'; font-size: 0.6rem;
+        color: #f14f4f; text-decoration: none; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1px;
+    }
+    .case-filter-bar .filter-clear:hover { text-decoration: underline; }
+
     /* ===== RECENT LOGS TABLE ===== */
     .glass-table {
         background: rgba(255,255,255,0.7); backdrop-filter: blur(15px);
@@ -246,7 +266,18 @@
     <div class="glass-table">
         <div class="table-top">
             <h3><i class="bx bx-pulse" style="vertical-align: middle; margin-right: 6px;"></i> Latest Custody Events</h3>
-            <a href="/admin/custody/custodylog/">View all &rarr;</a>
+            <div class="case-filter-bar">
+                <select onchange="if(this.value){window.location.search='?case='+this.value}else{window.location.search=''}">
+                    <option value="">All Cases</option>
+                    {% for c in all_cases %}
+                    <option value="{{ c.id }}" {% if selected_case == c.id|stringformat:'d' %}selected{% endif %}>{{ c.case_id }} — {{ c.title|truncatewords:5 }}</option>
+                    {% endfor %}
+                </select>
+                {% if selected_case %}
+                <a href="/admin/" class="filter-clear">Clear</a>
+                {% endif %}
+                <a href="/admin/custody/custodylog/" style="font-family:'JetBrains Mono';font-size:0.65rem;color:#5bc0be;text-decoration:none;font-weight:700;text-transform:uppercase;letter-spacing:1px;">View all &rarr;</a>
+            </div>
         </div>
         <table class="log-table">
             <thead>
