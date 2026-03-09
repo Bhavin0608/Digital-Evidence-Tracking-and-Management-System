@@ -4,3 +4,4 @@ _pycache_/
 *.sqlite3
 .env
 media/
+generate_docs_pdf.py

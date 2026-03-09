@@ -19,6 +19,16 @@ from django.urls import path, include
 from users.views import root_redirect
 from django.conf import settings
 from django.conf.urls.static import static
+
+# ── Custom admin dashboard context ──────────────────────────────
+from core.admin_site import DETAMSAdminSite
+
+# Patch the default admin site to inject dashboard data
+admin.site.__class__ = DETAMSAdminSite
+admin.site.site_header = "DETAMS Administration"
+admin.site.site_title = "DETAMS Admin"
+admin.site.index_title = "Dashboard"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("users.urls")),

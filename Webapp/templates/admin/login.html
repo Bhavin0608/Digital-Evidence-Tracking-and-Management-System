@@ -13,197 +13,140 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | EvidenceLock</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
     <style>
         :root {
-            --primary: #0284c7;
-            --secondary: #0ea5e9;
-            --bg-light: #f8fafc;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-        }
-/* ---------------------  New Added(override make flase) ------------------------ */
-        #header,
-        #nav-sidebar,
-        .breadcrumbs,
-        #content-related {
-            display: none !important;
+            --deep: #000000;
+            --blush: #5bc0be;
+            --sand: #f1f4f9;
+            --muted: #4a5568;
+            --white: #ffffff;
         }
 
-        .toggle-nav-sidebar {
-            display: none !important;
-        }
+        /* Hide default admin chrome */
+        #header, #nav-sidebar, .breadcrumbs, #content-related,
+        .toggle-nav-sidebar { display: none !important; }
 
-        #container {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
+        #container { padding: 0 !important; margin: 0 !important; }
 
         #content {
-            display: flex !important;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 0 !important;
-            margin-left: 0%;
+            display: flex !important; justify-content: center;
+            align-items: center; min-height: 100vh;
+            padding: 0 !important; margin-left: 0%;
         }
-
-        .colM {
-            width: 100% !important;
-        }
+        .colM { width: 100% !important; }
 
         body {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            background: var(--sand) !important;
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png") !important;
         }
-/* ---------------------  New Added ------------------------ */
+
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Manrope', sans-serif;
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
         }
 
-        body.light-theme {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
         .main-wrapper {
-            display: flex;
-            width: 100%;
-            max-width: 1100px;
-            background: #fff;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08);
+            display: flex; width: 100%; max-width: 1100px;
+            background: var(--white); border-radius: 35px; overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.1);
         }
 
         .info-side {
-            flex: 1;
-            background: var(--text-dark);
-            padding: 60px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            flex: 1; background: var(--deep); padding: 60px;
+            color: white; display: flex; flex-direction: column;
+            justify-content: center; position: relative; overflow: hidden;
         }
-
-        .icon-logo {
-            font-size: 3.5rem;
-            color: var(--secondary);
-            margin-bottom: 15px;
+        .info-side::after {
+            content: 'SECURE'; position: absolute; right: -20px; bottom: -20px;
+            font-family: 'Fraunces', serif; font-style: italic;
+            font-size: 8rem; opacity: 0.03; pointer-events: none; color: white;
         }
-
-        .brand h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            margin-bottom: 10px;
-        }
-
-        .brand span { color: var(--secondary); }
-
+        .icon-logo { font-size: 3.5rem; color: var(--blush); margin-bottom: 15px; }
+        .brand h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 10px; }
+        .brand span { color: var(--blush); }
         .brand-sub {
-            font-size: 1.05rem;
-            font-weight: 300;
-            line-height: 1.6;
-            color: #94a3b8;
-            margin-bottom: 30px;
+            font-size: 1rem; font-weight: 300; line-height: 1.7;
+            color: rgba(255,255,255,0.5); margin-bottom: 30px;
         }
-
         .feature-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(14, 165, 233, 0.1);
-            color: var(--secondary);
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(91,192,190,0.12); color: var(--blush);
+            padding: 10px 18px; border-radius: 50px;
+            font-family: 'JetBrains Mono'; font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
         }
 
         .form-side {
-            flex: 1.4;
-            padding: 60px;
-            background: #ffffff;
+            flex: 1.4; padding: 60px; background: var(--white);
+            display: flex; flex-direction: column; justify-content: center;
         }
 
         .title-area h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
+            font-size: 1.75rem; font-weight: 800; color: var(--deep);
+            letter-spacing: -0.5px; margin-bottom: 8px;
         }
-
         .title-area p {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-bottom: 40px;
+            font-family: 'JetBrains Mono'; font-size: 0.72rem;
+            color: var(--muted); margin-bottom: 40px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
 
+        .input-group {
+            margin-bottom: 22px;
+        }
         .input-group label {
-            display: block;
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            display: block; font-family: 'JetBrains Mono';
+            font-size: 0.65rem; font-weight: 700; color: var(--muted);
+            margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase;
         }
-
         .input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            color: var(--text-dark);
+            width: 100%; padding: 16px 20px; font-size: 0.92rem; font-weight: 600;
+            background: var(--sand); border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 16px; color: var(--deep); outline: none;
+            font-family: 'Plus Jakarta Sans'; transition: 0.3s;
+        }
+        .input-group input:focus {
+            border-color: var(--blush);
+            box-shadow: 0 0 0 4px rgba(91,192,190,0.12);
         }
 
         .btn-primary {
-            width: 100%;
-            padding: 18px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 25px;
+            width: 100%; padding: 18px; margin-top: 10px;
+            background: var(--blush); color: var(--deep);
+            border: none; border-radius: 18px;
+            font-family: 'Plus Jakarta Sans'; font-size: 0.9rem;
+            font-weight: 800; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 2px; display: flex; align-items: center;
+            justify-content: center; gap: 10px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-primary:hover {
+            background: var(--deep); color: var(--blush);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        .login-link {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-muted);
+        .error-msg {
+            background: rgba(241,79,79,0.08); color: #991b1b;
+            border: 1px solid rgba(241,79,79,0.15);
+            padding: 14px 18px; border-radius: 14px;
+            font-size: 0.82rem; font-weight: 600; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        .login-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
+        .login-footer {
+            text-align: center; margin-top: 30px;
+            font-family: 'JetBrains Mono'; font-size: 0.65rem;
+            color: var(--muted); letter-spacing: 0.5px;
         }
     </style>
 </head>
 
-<body class="light-theme">
+<body>
 
 <div class="main-wrapper">
 
@@ -218,7 +161,7 @@
             ensuring data integrity through cryptographic verification.
         </p>
         <div class="feature-tag">
-            <i class='bx bx-lock-open-alt'></i> Secure Session Access
+            <i class='bx bx-lock-open-alt'></i> Secure Admin Access
         </div>
     </div>
 
@@ -227,26 +170,27 @@
 
         <div class="title-area">
             <h2>Admin Login</h2>
-            <p>Access the forensic vault with your official credentials.</p>
+            <p>Access the forensic vault with your credentials</p>
         </div>
+
+        {% if form.errors %}
+            <div class="error-msg">
+                <i class='bx bx-error-circle' style="font-size: 1.2rem;"></i>
+                Invalid username or password. Please try again.
+            </div>
+        {% endif %}
 
         <!-- DJANGO ADMIN LOGIN FORM -->
         <form method="post" action="{% url 'admin:login' %}">
             {% csrf_token %}
 
-            {% if form.errors %}
-                <p style="color:red; margin-bottom:15px;">
-                    *Invalid username or password.
-                </p>
-            {% endif %}
-
             <div class="input-group">
-                <label>USERNAME</label>
-                <input type="text" name="username" required>
+                <label>Username</label>
+                <input type="text" name="username" required autofocus>
             </div>
 
-            <div class="input-group" style="margin-top:20px;">
-                <label>SECURITY PASSWORD</label>
+            <div class="input-group">
+                <label>Security Password</label>
                 <input type="password" name="password" required>
             </div>
 
@@ -259,8 +203,8 @@
 
         </form>
 
-        <p class="login-link">
-            New to the system? <font style="color: #0ea5e9;">Create New Superuser</font>
+        <p class="login-footer">
+            DETAMS &middot; Digital Evidence Tracking &amp; Management System
         </p>
 
     </div>

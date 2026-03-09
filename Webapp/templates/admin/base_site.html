@@ -1,54 +1,326 @@
 {% extends "admin/base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block extrastyle %}
-    <style>
-        /* ===== CENTER WHOLE DASHBOARD ===== */
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-        #content {
-            /* display: flex; */
-            justify-content: center;   /* horizontal center */
-        }
+<style>
+    :root {
+        --dtm-deep: #000000;
+        --dtm-blush: #5bc0be;
+        --dtm-sand: #f1f4f9;
+        --dtm-muted: #4a5568;
+        --dtm-white: #ffffff;
+        --dtm-success: #38b000;
+    }
 
-        /* Main dashboard wrapper */
-        .colMS {
-            float: none !important;
-            margin: 50px 250px !important;   /* center block */
-            width: 100%;
-            max-width: 1100px;              /* control width */
-        }
+    /* ===== GLOBAL RESET ===== */
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        background: var(--dtm-sand) !important;
+        background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png") !important;
+    }
 
-        /* Keep Recent Actions beside models */
-        .colM {
-            width: 50% !important;
-        }
+    /* ===== HEADER ===== */
+    #header {
+        background: var(--dtm-deep) !important;
+        padding: 15px 30px !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+    }
+    #site-name a {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+        font-weight: 800 !important; font-size: 1.1rem !important;
+        color: var(--dtm-white) !important; letter-spacing: 1px;
+    }
+    #user-tools {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.7rem !important; color: var(--dtm-muted) !important;
+        letter-spacing: 0.5px;
+    }
+    #user-tools a {
+        color: var(--dtm-blush) !important; font-weight: 600 !important;
+        border-bottom: none !important;
+    }
+    #user-tools a:hover { color: var(--dtm-white) !important; }
 
-        .colS {
-            width: 50% !important;
-        }
+    .theme-toggle label { color: var(--dtm-muted) !important; font-size: 0.7rem !important; }
 
-        /* Optional spacing */
-        .module {
-            border-radius: 12px;
-        }
+    /* ===== BREADCRUMBS ===== */
+    .breadcrumbs {
+        background: rgba(255,255,255,0.5) !important; backdrop-filter: blur(10px);
+        padding: 12px 30px !important; border: none !important;
+        font-family: 'JetBrains Mono' !important; font-size: 0.7rem !important;
+        color: var(--dtm-muted) !important;
+    }
+    .breadcrumbs a { color: var(--dtm-blush) !important; }
 
-        /* Remove extra left gap if sidebar hidden */
-        #container {
-            padding-left: 0 !important;
-        }
+    /* ===== SIDEBAR ===== */
+    #nav-sidebar {
+        background: var(--dtm-deep) !important;
+        border-right: none !important;
+    }
+    .toggle-nav-sidebar {
+        background: var(--dtm-deep) !important;
+        border: none !important;
+        color: var(--dtm-blush) !important;
+    }
+    #nav-sidebar .module caption {
+        font-family: 'JetBrains Mono' !important; font-size: 0.65rem !important;
+        text-transform: uppercase !important; letter-spacing: 2px !important;
+        color: var(--dtm-blush) !important; font-weight: 700 !important;
+        padding: 12px 16px !important;
+    }
+    #nav-sidebar th {
+        font-family: 'Plus Jakarta Sans' !important;
+        padding: 10px 16px !important;
+    }
+    #nav-sidebar th a {
+        color: rgba(255,255,255,0.65) !important;
+        font-weight: 600 !important; font-size: 0.82rem !important;
+    }
+    #nav-sidebar th a:hover { color: var(--dtm-blush) !important; }
+    #nav-sidebar .current-model a { color: var(--dtm-blush) !important; }
+    #nav-sidebar td a {
+        color: rgba(255,255,255,0.35) !important; font-size: 0.7rem !important;
+    }
+    #nav-sidebar td a:hover { color: var(--dtm-blush) !important; }
+    #nav-sidebar .module { background: transparent !important; border: none !important; }
 
-    </style>
+    /* ===== CONTENT AREA ===== */
+    #container { background: var(--dtm-sand) !important; }
+    #content {
+        font-family: 'Plus Jakarta Sans' !important;
+        padding: 30px !important;
+    }
+    #content h1, #content h2 {
+        font-family: 'Plus Jakarta Sans' !important;
+        font-weight: 800 !important; color: var(--dtm-deep) !important;
+    }
+
+    /* ===== MODULES ===== */
+    .module {
+        border-radius: 18px !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        box-shadow: 0 6px 20px rgba(11,19,43,0.04) !important;
+        overflow: hidden !important;
+        background: rgba(255,255,255,0.7) !important;
+        backdrop-filter: blur(15px) !important;
+    }
+    .module caption, .module h2 {
+        font-family: 'Plus Jakarta Sans' !important;
+        font-weight: 800 !important; font-size: 0.85rem !important;
+        background: rgba(0,0,0,0.02) !important;
+        color: var(--dtm-deep) !important;
+        padding: 14px 20px !important;
+        letter-spacing: 0.5px !important;
+    }
+
+    /* ===== FORMS ===== */
+    .aligned label {
+        font-family: 'JetBrains Mono' !important; font-size: 0.7rem !important;
+        font-weight: 600 !important; text-transform: uppercase !important;
+        letter-spacing: 1px !important; color: var(--dtm-muted) !important;
+    }
+    input[type="text"], input[type="password"], input[type="email"],
+    input[type="url"], input[type="number"], input[type="tel"],
+    input[type="date"], textarea, select,
+    .vTextField, .vLargeTextField, .vDateField {
+        font-family: 'Plus Jakarta Sans' !important;
+        padding: 12px 16px !important; border-radius: 12px !important;
+        border: 1px solid rgba(0,0,0,0.08) !important;
+        background: var(--dtm-white) !important;
+        font-size: 0.88rem !important; font-weight: 500 !important;
+        transition: 0.3s !important;
+    }
+    input:focus, textarea:focus, select:focus {
+        border-color: var(--dtm-blush) !important;
+        box-shadow: 0 0 0 3px rgba(91,192,190,0.15) !important;
+        outline: none !important;
+    }
+    select { cursor: pointer !important; }
+
+    .help, .helptext, p.help {
+        font-family: 'JetBrains Mono' !important;
+        font-size: 0.62rem !important; color: var(--dtm-muted) !important;
+        letter-spacing: 0.3px !important;
+    }
+
+    /* ===== FIELDSETS ===== */
+    fieldset {
+        border-radius: 18px !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        background: rgba(255,255,255,0.5) !important;
+        margin-bottom: 20px !important;
+    }
+    fieldset h2, fieldset legend {
+        font-family: 'Plus Jakarta Sans' !important;
+        font-weight: 800 !important; font-size: 0.82rem !important;
+        text-transform: uppercase !important; letter-spacing: 1px !important;
+        color: var(--dtm-deep) !important;
+    }
+
+    /* ===== BUTTONS ===== */
+    .submit-row input,
+    input[type="submit"], .button, .submit-row a.button {
+        font-family: 'Plus Jakarta Sans' !important;
+        font-weight: 700 !important; font-size: 0.82rem !important;
+        border-radius: 14px !important; padding: 12px 25px !important;
+        text-transform: uppercase !important; letter-spacing: 1px !important;
+        border: none !important; cursor: pointer !important;
+        transition: all 0.3s !important;
+    }
+    input[type="submit"].default, .submit-row input.default {
+        background: var(--dtm-blush) !important;
+        color: var(--dtm-deep) !important;
+    }
+    input[type="submit"].default:hover, .submit-row input.default:hover {
+        background: var(--dtm-deep) !important;
+        color: var(--dtm-blush) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    }
+    .submit-row {
+        background: rgba(255,255,255,0.5) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 18px !important; padding: 18px !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+    }
+    a.deletelink, .deletelink {
+        background: #f14f4f !important; color: white !important;
+        border-radius: 14px !important; padding: 12px 20px !important;
+        font-weight: 700 !important;
+    }
+
+    /* ===== CHANGE LIST ===== */
+    #changelist {
+        background: rgba(255,255,255,0.7) !important;
+        backdrop-filter: blur(15px) !important;
+        border-radius: 18px !important;
+        border: 1px solid rgba(0,0,0,0.05) !important;
+        padding: 0 !important;
+    }
+    #changelist-search input[type="text"] { border-radius: 12px !important; }
+    #changelist-search input[type="submit"] {
+        background: var(--dtm-blush) !important;
+        color: var(--dtm-deep) !important;
+        border-radius: 12px !important;
+    }
+    #changelist-filter {
+        background: rgba(255,255,255,0.7) !important;
+        border-radius: 18px !important;
+    }
+    #changelist-filter h2 {
+        font-family: 'JetBrains Mono' !important;
+        font-size: 0.65rem !important; text-transform: uppercase !important;
+        letter-spacing: 2px !important; color: var(--dtm-muted) !important;
+    }
+    #changelist-filter li a { font-size: 0.82rem !important; }
+    #changelist-filter li.selected a {
+        color: var(--dtm-blush) !important; font-weight: 700 !important;
+    }
+
+    /* ===== RESULTS TABLE ===== */
+    #result_list { border-radius: 14px !important; overflow: hidden !important; }
+    #result_list th {
+        font-family: 'JetBrains Mono' !important;
+        font-size: 0.62rem !important; font-weight: 700 !important;
+        text-transform: uppercase !important; letter-spacing: 1px !important;
+        background: rgba(0,0,0,0.03) !important;
+        color: var(--dtm-muted) !important;
+        padding: 12px 16px !important;
+    }
+    #result_list td {
+        font-size: 0.82rem !important; padding: 12px 16px !important;
+        border-bottom: 1px solid rgba(0,0,0,0.03) !important;
+    }
+    #result_list a {
+        color: var(--dtm-deep) !important; font-weight: 600 !important;
+    }
+    #result_list a:hover { color: var(--dtm-blush) !important; }
+    #result_list tr:hover td { background: rgba(91,192,190,0.04) !important; }
+    #result_list tr.row1 { background: transparent !important; }
+    #result_list tr.row2 { background: rgba(0,0,0,0.01) !important; }
+
+    /* ===== INLINES ===== */
+    .inline-group h2 {
+        background: rgba(0,0,0,0.02) !important;
+        border-radius: 14px 14px 0 0 !important;
+    }
+    .tabular td, .tabular th {
+        font-size: 0.82rem !important;
+        padding: 10px 14px !important;
+    }
+
+    /* ===== PAGINATION ===== */
+    .paginator {
+        font-family: 'JetBrains Mono' !important;
+        font-size: 0.72rem !important; color: var(--dtm-muted) !important;
+        padding: 14px 20px !important;
+    }
+    .paginator a { color: var(--dtm-blush) !important; font-weight: 700 !important; }
+
+    /* ===== OBJECT TOOLS ===== */
+    .object-tools a {
+        background: var(--dtm-blush) !important;
+        color: var(--dtm-deep) !important;
+        border-radius: 12px !important;
+        font-family: 'Plus Jakarta Sans' !important;
+        font-weight: 700 !important; font-size: 0.75rem !important;
+        text-transform: uppercase !important; letter-spacing: 1px !important;
+    }
+    .object-tools a:hover {
+        background: var(--dtm-deep) !important;
+        color: var(--dtm-blush) !important;
+    }
+    .object-tools li { height: auto !important; }
+
+    /* ===== MESSAGES ===== */
+    .messagelist li {
+        border-radius: 14px !important;
+        font-family: 'Plus Jakarta Sans' !important;
+        font-weight: 600 !important; font-size: 0.85rem !important;
+        padding: 14px 22px !important; margin-bottom: 12px !important;
+    }
+    .messagelist .success {
+        background: rgba(56,176,0,0.08) !important;
+        color: #166534 !important;
+    }
+    .messagelist .error {
+        background: rgba(241,79,79,0.08) !important;
+        color: #991b1b !important;
+    }
+
+    /* ===== CALENDAR ===== */
+    .calendarbox, .clockbox {
+        border-radius: 14px !important; overflow: hidden !important;
+    }
+
+    /* ===== RELATED WIDGET ===== */
+    .related-widget-wrapper select { border-radius: 12px !important; }
+
+    /* ===== FOOTER ===== */
+    #footer {
+        font-family: 'JetBrains Mono' !important;
+        font-size: 0.6rem !important;
+        text-align: center !important;
+        color: var(--dtm-muted) !important;
+        letter-spacing: 1px !important;
+    }
+</style>
 {% endblock %}
 
-{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('DETAMS Admin') }}{% endblock %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | DETAMS Admin{% endblock %}
 
 {% block branding %}
-<div id="site-name"><a href="{% url 'admin:index' %}">DETAMS Administration</a></div>
+<div id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <i class='bx bxs-shield-alt-2' style="color: #5bc0be; margin-right: 8px; vertical-align: middle;"></i>DETAMS Administration
+    </a>
+</div>
 {% if user.is_anonymous %}
   {% include "admin/color_theme_toggle.html" %}
 {% endif %}
 {% endblock %}
-{% block content_title %}{% endblock %}
-
 
 {% block nav-global %}{% endblock %}
