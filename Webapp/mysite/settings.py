@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,12 +11,14 @@ SECRET_KEY = os.environ.get(
     "django-insecure-qvmrm@fh(m38@kd^e01m3(ur!g4-ne2)f9bx!ixzlh6fa-=_n$"
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Render sets RENDER environment variable automatically
+DEBUG = os.environ.get("RENDER") is None
 
 ALLOWED_HOSTS = ["*"]
 
-# Application definition
+# -------------------------------------------------------------------
+# Applications
+# -------------------------------------------------------------------
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -32,6 +35,10 @@ INSTALLED_APPS = [
     "custody",
 ]
 
+# -------------------------------------------------------------------
+# Middleware
+# -------------------------------------------------------------------
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -45,6 +52,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'mysite.urls'
+
+# -------------------------------------------------------------------
+# Templates
+# -------------------------------------------------------------------
 
 TEMPLATES = [
     {
@@ -64,16 +75,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
-# Database (SQLite for deployment)
+# -------------------------------------------------------------------
+# Database
+# -------------------------------------------------------------------
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get("DATABASE_URL"):
+    DATABASES = {
+        "default": dj_database_url.parse(
+            os.environ.get("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'detams_db',
+            'USER': 'postgres',
+            'PASSWORD': 'db@1234',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
-# Password validation
+# -------------------------------------------------------------------
+# Password Validation
+# -------------------------------------------------------------------
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -90,39 +118,50 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# -------------------------------------------------------------------
 # Internationalization
+# -------------------------------------------------------------------
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files
+# -------------------------------------------------------------------
+# Static Files
+# -------------------------------------------------------------------
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = (
+    "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
 
-# Media files
+# -------------------------------------------------------------------
+# Media Files
+# -------------------------------------------------------------------
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
+# -------------------------------------------------------------------
+# Default PK
+# -------------------------------------------------------------------
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Session settings
+# -------------------------------------------------------------------
+# Session Settings
+# -------------------------------------------------------------------
 
 SESSION_COOKIE_AGE = 3600
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
+# -------------------------------------------------------------------
 # Login URL
+# -------------------------------------------------------------------
 
 LOGIN_URL = "/login/"
